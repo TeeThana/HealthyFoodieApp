@@ -3,7 +3,7 @@ import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 
-const SignInScreen = () => {
+const SignUpScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -15,7 +15,7 @@ const SignInScreen = () => {
 
   return (
     <LinearGradient
-      colors={["#00D49D", "#6AFFD8", "#FFFFFF"]}
+      colors={["#FEDF03", "#FFEC66", "#FFFFFF"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       locations={[0, 0.3, 1]}
@@ -23,16 +23,7 @@ const SignInScreen = () => {
     >
       <Text style={styles.healthText}>HEALTHY HEALTHY HEALTHY</Text>
       <View style={styles.header}>
-        <Text style={styles.signInText}>Sign In</Text>
-        <View style={styles.subHeader}>
-          <Text style={styles.haveAccText}>Don't have an account?</Text>
-          <Button
-            style={styles.signUpButton}
-            onPress={() => console.log("sign up")}
-          >
-            <Text style={{ color: "#fff", fontWeight: "700" }}>Sign Up</Text>
-          </Button>
-        </View>
+        <Text style={styles.signInText}>Sign Up</Text>
       </View>
       <View style={styles.form}>
         <TextInput
@@ -274,4 +265,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignInScreen;
+export default SignUpScreen;

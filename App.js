@@ -1,12 +1,16 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
-import SplashScreen from "./src/screens/SplashScreen";
+
+import SignUpScreen from "./src/screens/SignUpScreen";
 import SignInScreen from "./src/screens/SignInScreen";
-import { FontProvider } from "./src/contexts/FontContext";
+import SplashScreen from "./src/screens/SplashScreen";
+
+// const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    //<SplashScreen />
+    //<SplashScreen /> 
     <SignInScreen />
+    // <SignUpScreen />
   );
 }
