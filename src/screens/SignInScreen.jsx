@@ -1,9 +1,19 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+} from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
-const SignInScreen = () => {
+const windowWidth = Dimensions.get("window").width;
+const fontSize = windowWidth * 0.2;
+
+const SignInScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -28,30 +38,66 @@ const SignInScreen = () => {
           <Text style={styles.haveAccText}>Don't have an account?</Text>
           <Button
             style={styles.signUpButton}
-            onPress={() => console.log("sign up")}
+            onPress={() => navigation.navigate("SignUp")}
           >
             <Text style={{ color: "#fff", fontWeight: "700" }}>Sign Up</Text>
           </Button>
         </View>
       </View>
       <View style={styles.form}>
-        <TextInput
-          style={styles.userInput}
-          placeholder="Username"
-          placeholderTextColor="rgba(49, 48, 71, 0.70)"
-          underlineColor="transparent"
-          value={username}
-          onChangeText={(text) => setUsername(text)}
-        />
-        <TextInput
-          style={styles.passInput}
-          placeholder="Password"
-          placeholderTextColor="rgba(49, 48, 71, 0.70)"
-          underlineColor="transparent"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          secureTextEntry
-        />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: "15%",
+            marginLeft: "12%",
+            marginRight: "20%",
+            borderWidth: 0,
+          }}
+        >
+          <FontAwesome5
+            name="user"
+            size={20}
+            color="#777"
+            solid
+            style={{ flex: 0, marginRight: 5 }}
+          />
+          <TextInput
+            style={styles.userInput}
+            placeholder="Username"
+            placeholderTextColor="rgba(49, 48, 71, 0.70)"
+            underlineColor="transparent"
+            value={username}
+            onChangeText={(text) => setUsername(text)}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: "12%",
+            marginRight: "20%",
+            borderWidth: 0,
+            marginTop: 33,
+          }}
+        >
+          <FontAwesome5
+            name="lock"
+            size={20}
+            color="#777"
+            solid
+            style={{ flex: 0, marginRight: 5 }}
+          />
+          <TextInput
+            style={styles.passInput}
+            placeholder="Password"
+            placeholderTextColor="rgba(49, 48, 71, 0.70)"
+            underlineColor="transparent"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            secureTextEntry 
+          />
+        </View>
         <TouchableOpacity
           style={styles.forgotPassword}
           onPress={() => console.log("forgot password")}
@@ -143,9 +189,9 @@ const styles = StyleSheet.create({
     color: "rgba(31, 154, 122, 0.35)",
     opacity: 0.6,
     fontFamily: "inter-black",
-    fontSize: 90,
+    fontSize: fontSize,
     fontStyle: "normal",
-    fontWeight: "700",
+    fontWeight: "800",
     textAlign: "center",
   },
   header: {
@@ -200,10 +246,11 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: "700",
     height: 40,
+    width: "100%",
     borderBottomColor: "#F4F4F4",
     borderBottomWidth: 3,
-    marginHorizontal: "12%",
-    marginTop: "15%",
+    // marginHorizontal: "12%",
+    // marginTop: "15%",
     backgroundColor: "#fff",
   },
   passInput: {
@@ -212,10 +259,11 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: "700",
     height: 40,
+    width: "100%",
     borderBottomColor: "#F4F4F4",
     borderBottomWidth: 3,
-    marginHorizontal: "12%",
-    marginTop: 33,
+    // marginHorizontal: "12%",
+    // marginTop: 33,
     backgroundColor: "#fff",
   },
   forgotPassword: {

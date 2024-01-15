@@ -1,17 +1,39 @@
-import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+  BackHandler,
+} from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
-const SignUpScreen = () => {
+const windowWidth = Dimensions.get("window").width;
+const fontSize = windowWidth * 0.2;
+
+const SignUpScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPass, setConfirmPass] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const handleSignIn = () => {
-    // Handle sign in logic here
-  };
+   useEffect(() => {
+     const backAction = () => {
+       navigation.goBack();
+       return true; 
+     };
+
+     const backHandler = BackHandler.addEventListener(
+       "hardwareBackPress",
+       backAction
+     );
+
+     return () => backHandler.remove();
+   }, [navigation]);
 
   return (
     <LinearGradient
@@ -22,46 +44,102 @@ const SignUpScreen = () => {
       style={styles.container}
     >
       <Text style={styles.healthText}>HEALTHY HEALTHY HEALTHY</Text>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <FontAwesome5
+          name="arrow-left"
+          size={25}
+          color="#777"
+          solid
+          style={{ marginTop: "17%", marginLeft: "7%" }}
+        />
+      </TouchableOpacity>
       <View style={styles.header}>
         <Text style={styles.signInText}>Sign Up</Text>
       </View>
       <View style={styles.form}>
-        <TextInput
-          style={styles.userInput}
-          placeholder="Username"
-          placeholderTextColor="rgba(49, 48, 71, 0.70)"
-          underlineColor="transparent"
-          value={username}
-          onChangeText={(text) => setUsername(text)}
-        />
-        <TextInput
-          style={styles.passInput}
-          placeholder="Password"
-          placeholderTextColor="rgba(49, 48, 71, 0.70)"
-          underlineColor="transparent"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          secureTextEntry
-        />
-        <TouchableOpacity
-          style={styles.forgotPassword}
-          onPress={() => console.log("forgot password")}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: "15%",
+            marginLeft: "12%",
+            marginRight: "20%",
+            borderWidth: 0,
+          }}
         >
-          <Text
-            style={{
-              color: "#313047",
-              fontFamily: "inter-black",
-              fontSize: 13,
-              fontStyle: "normal",
-              fontWeight: "700",
-            }}
-          >
-            FORGOT PASSWORD?
-          </Text>
-        </TouchableOpacity>
+          <FontAwesome5
+            name="user"
+            size={20}
+            color="#777"
+            solid
+            style={{ flex: 0, marginRight: 5 }}
+          />
+          <TextInput
+            style={styles.userInput}
+            placeholder="Username"
+            placeholderTextColor="rgba(49, 48, 71, 0.70)"
+            underlineColor="transparent"
+            value={username}
+            onChangeText={(text) => setUsername(text)}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: "12%",
+            marginRight: "20%",
+            borderWidth: 0,
+            marginTop: "4%",
+          }}
+        >
+          <FontAwesome5
+            name="lock"
+            size={20}
+            color="#777"
+            solid
+            style={{ flex: 0, marginRight: 5 }}
+          />
+          <TextInput
+            style={styles.passInput}
+            placeholder="Password"
+            placeholderTextColor="rgba(49, 48, 71, 0.70)"
+            underlineColor="transparent"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            secureTextEntry
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: "12%",
+            marginRight: "20%",
+            borderWidth: 0,
+            marginTop: "4%",
+          }}
+        >
+          <FontAwesome5
+            name="lock"
+            size={20}
+            color="#777"
+            solid
+            style={{ flex: 0, marginRight: 5 }}
+          />
+          <TextInput
+            style={styles.passInput}
+            placeholder="Confirm Password"
+            placeholderTextColor="rgba(49, 48, 71, 0.70)"
+            underlineColor="transparent"
+            value={confirmPass}
+            onChangeText={(text) => setConfirmPass(text)}
+            secureTextEntry
+          />
+        </View>
         <Button
-          style={styles.signInButton}
-          onPress={() => console.log("sign in")}
+          style={styles.signUpButton}
+          onPress={() => console.log("sign up")}
         >
           <Text
             style={{
@@ -71,7 +149,7 @@ const SignUpScreen = () => {
               fontFamily: "inter-black",
             }}
           >
-            Sign In
+            Sign Up
           </Text>
         </Button>
         <View style={styles.horizontalLineZone}>
@@ -131,17 +209,17 @@ const styles = StyleSheet.create({
   healthText: {
     marginTop: 55,
     position: "absolute",
-    color: "rgba(31, 154, 122, 0.35)",
+    color: "#F0CA5E",
     opacity: 0.6,
     fontFamily: "inter-black",
-    fontSize: 90,
+    fontSize: fontSize,
     fontStyle: "normal",
-    fontWeight: "700",
+    fontWeight: "800",
     textAlign: "center",
   },
   header: {
-    marginTop: "30%",
-    marginBottom: "1%",
+    marginTop: "7.5%",
+    marginBottom: "18.5%",
     marginLeft: "9%",
     marginRight: "9%",
   },
@@ -191,10 +269,11 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: "700",
     height: 40,
+    width: "100%",
     borderBottomColor: "#F4F4F4",
     borderBottomWidth: 3,
-    marginHorizontal: "12%",
-    marginTop: "15%",
+    // marginHorizontal: "12%",
+    // marginTop: "15%",
     backgroundColor: "#fff",
   },
   passInput: {
@@ -203,10 +282,11 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: "700",
     height: 40,
+    width: "100%",
     borderBottomColor: "#F4F4F4",
     borderBottomWidth: 3,
-    marginHorizontal: "12%",
-    marginTop: 33,
+    // marginHorizontal: "12%",
+    // marginTop: 33,
     backgroundColor: "#fff",
   },
   forgotPassword: {
@@ -215,13 +295,13 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginRight: "12%",
   },
-  signInButton: {
+  signUpButton: {
     justifyContent: "center",
     backgroundColor: "#313047",
     borderRadius: 20,
     color: "#ffff",
     marginHorizontal: "12%",
-    marginTop: "15%",
+    marginTop: "11%",
     // paddingVertical: "5%",
     height: 52,
   },
