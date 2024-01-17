@@ -11,6 +11,10 @@ import { TextInput, Button, Text } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
+//db
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+
 const windowWidth = Dimensions.get("window").width;
 const fontSize = windowWidth * 0.2;
 
@@ -21,19 +25,38 @@ const SignUpScreen = ({ navigation }) => {
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-   useEffect(() => {
-     const backAction = () => {
-       navigation.goBack();
-       return true; 
-     };
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack();
+      return true;
+    };
 
-     const backHandler = BackHandler.addEventListener(
-       "hardwareBackPress",
-       backAction
-     );
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
 
-     return () => backHandler.remove();
-   }, [navigation]);
+    return () => backHandler.remove();
+  }, [navigation]);
+
+  const handleSignUp = async (user, pass) => {
+    try {
+      if (pass === password && pass === confirmPass) {
+        await addDoc(collection(db, "testUser"), {
+          username: user,
+          password: pass,
+        });
+        console.log("added user successfully")
+        setTimeout(() => {
+          navigation.navigate("SignIn");
+        }, 3000);
+      } else if (pass != confirmPass) {
+        alert("Passwords do not match")
+      }
+    } catch(err) {
+      console.error("SignUp failed", err.message);
+    }
+  };
 
   return (
     <LinearGradient
@@ -137,10 +160,7 @@ const SignUpScreen = ({ navigation }) => {
             secureTextEntry
           />
         </View>
-        <Button
-          style={styles.signUpButton}
-          onPress={() => console.log("sign up")}
-        >
+        <Button style={styles.signUpButton} onPress={() => handleSignUp(username, password)}>
           <Text
             style={{
               color: "#fff",

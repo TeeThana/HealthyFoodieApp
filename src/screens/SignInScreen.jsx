@@ -10,6 +10,12 @@ import { TextInput, Button, Text } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
+//db
+import { getDocs, collection, query, where } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+
+
+
 const windowWidth = Dimensions.get("window").width;
 const fontSize = windowWidth * 0.2;
 
@@ -19,8 +25,26 @@ const SignInScreen = ({ navigation }) => {
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const handleSignIn = () => {
-    // Handle sign in logic here
+  const handleSignIn = async (user, pass) => {
+    try {
+      const res = await getDocs(
+        query(collection(db, "testUser"), where("username", "==", user), where("password", "==", pass))
+      );
+      res.forEach(doc => {
+        const data = doc.data();
+        console.log("Username:", data.username, "Password:", data.password);
+      });
+
+      if (res.empty) {
+        alert("No user found with the provided username and password");
+      } else {
+        console.log("User sign in successful");
+        // navigation.navigate("HomeScreen");
+      }
+
+    } catch(err) {
+      console.error("SignIn failed", err.message);
+    }
   };
 
   return (
@@ -95,7 +119,7 @@ const SignInScreen = ({ navigation }) => {
             underlineColor="transparent"
             value={password}
             onChangeText={(text) => setPassword(text)}
-            secureTextEntry 
+            secureTextEntry
           />
         </View>
         <TouchableOpacity
@@ -114,10 +138,7 @@ const SignInScreen = ({ navigation }) => {
             FORGOT PASSWORD?
           </Text>
         </TouchableOpacity>
-        <Button
-          style={styles.signInButton}
-          onPress={() => console.log("sign in")}
-        >
+        <Button style={styles.signInButton} onPress={() => handleSignIn(username, password)}>
           <Text
             style={{
               color: "#fff",
