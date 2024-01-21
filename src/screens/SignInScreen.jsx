@@ -14,8 +14,6 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
-
-
 const windowWidth = Dimensions.get("window").width;
 const fontSize = windowWidth * 0.2;
 
@@ -39,7 +37,7 @@ const SignInScreen = ({ navigation }) => {
         alert("No user found with the provided username and password");
       } else {
         console.log("User sign in successful");
-        // navigation.navigate("HomeScreen");
+        navigation.replace("Info");
       }
 
     } catch(err) {
