@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -27,6 +29,11 @@
     "fonts": {
       "inter": {
         "black": "./assets/fonts/Inter-Black.ttf"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a7a5bb20-f422-4aad-9e80-4c927d1904cd"
       }
     }
   }

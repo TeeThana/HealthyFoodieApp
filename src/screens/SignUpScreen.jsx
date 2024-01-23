@@ -11,9 +11,8 @@ import { TextInput, Button, Text } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
-//db
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
+//api
+import { GoogleAuth, CreateUser } from "../api/Authentication";
 
 const windowWidth = Dimensions.get("window").width;
 const fontSize = windowWidth * 0.2;
@@ -39,22 +38,18 @@ const SignUpScreen = ({ navigation }) => {
     return () => backHandler.remove();
   }, [navigation]);
 
-  const handleSignUp = async (user, pass) => {
+  const handleSignUp =(user, pass) => {
     try {
       if (pass === password && pass === confirmPass) {
-        await addDoc(collection(db, "testUser"), {
-          username: user,
-          password: pass,
-        });
-        console.log("added user successfully")
+        CreateUser(user, pass);
         setTimeout(() => {
           navigation.navigate("SignIn");
         }, 3000);
       } else if (pass != confirmPass) {
         alert("Passwords do not match")
       }
-    } catch(err) {
-      console.error("SignUp failed", err.message);
+    } catch(e) {
+      console.error("SignUp failed: ", e.message);
     }
   };
 
@@ -166,7 +161,6 @@ const SignUpScreen = ({ navigation }) => {
               color: "#fff",
               fontWeight: "700",
               fontSize: 20,
-              fontFamily: "inter-black",
             }}
           >
             Sign Up
@@ -177,7 +171,6 @@ const SignUpScreen = ({ navigation }) => {
           <Text
             style={{
               color: "#313047",
-              fontFamily: "inter-black",
               fontSize: 15,
               fontStyle: "normal",
               fontWeight: "700",
@@ -210,7 +203,6 @@ const SignUpScreen = ({ navigation }) => {
                 color: "#767676",
                 fontWeight: "700",
                 fontSize: 20,
-                fontFamily: "inter-black",
               }}
             >
               Continue with Google
@@ -231,7 +223,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     color: "#F0CA5E",
     opacity: 0.6,
-    fontFamily: "inter-black",
     fontSize: fontSize,
     fontStyle: "normal",
     fontWeight: "800",
@@ -245,7 +236,6 @@ const styles = StyleSheet.create({
   },
   signInText: {
     color: "#313047",
-    fontFamily: "inter-black",
     fontSize: 64,
     fontStyle: "normal",
     fontWeight: "800",
@@ -258,7 +248,6 @@ const styles = StyleSheet.create({
   },
   haveAccText: {
     color: "rgba(49, 48, 71, 0.70)",
-    fontFamily: "inter-black",
     fontSize: 15,
     fontStyle: "normal",
     fontWeight: "700",
@@ -284,7 +273,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
   },
   userInput: {
-    fontFamily: "inter-black",
     fontSize: 15,
     fontStyle: "normal",
     fontWeight: "700",
@@ -297,7 +285,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   passInput: {
-    fontFamily: "inter-black",
     fontSize: 15,
     fontStyle: "normal",
     fontWeight: "700",

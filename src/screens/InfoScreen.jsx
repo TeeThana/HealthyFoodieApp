@@ -9,21 +9,38 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
-const InfoScreen = ({ navigation }) => {
-  useEffect(() => {
-    const backAction = () => {
-      navigation.goBack();
-      return true;
-    };
+//api
+import {
+  GoogleAuth,
+  UserAuth,
+  signedOut,
+  checkState,
+} from "../api/Authentication";
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+const InfoScreen = ({ navigation, route }) => {
+  const { handleSignOut } = route.params || {};
 
-    return () => backHandler.remove();
-  }, [navigation]);
-  
+  // useEffect(() => {
+  //   const backAction = () => {
+  //     navigation.goBack();
+  //     return true;
+  //   };
+
+  //   const backHandler = BackHandler.addEventListener(
+  //     "hardwareBackPress",
+  //     backAction
+  //   );
+
+  //   return () => backHandler.remove();
+  // }, [navigation]);
+
+  const backHandler = () => {
+    signedOut();
+    if (handleSignOut) {
+      handleSignOut();
+    }
+    navigation.navigate("SignIn");
+  };
   return (
     <LinearGradient
       colors={["#00D49D", "#6AFFD8", "#FFFFFF"]}
@@ -33,7 +50,7 @@ const InfoScreen = ({ navigation }) => {
       style={styles.container}
     >
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => backHandler()}>
           <FontAwesome5
             name="arrow-left"
             size={25}

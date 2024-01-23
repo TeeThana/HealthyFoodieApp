@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -10,9 +10,13 @@ import { TextInput, Button, Text } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
-//db
-import { getDocs, collection, query, where } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
+//api
+import {
+  GoogleAuth,
+  UserAuth,
+  signedOut,
+  checkState,
+} from "../api/Authentication";
 
 const windowWidth = Dimensions.get("window").width;
 const fontSize = windowWidth * 0.2;
@@ -20,29 +24,28 @@ const fontSize = windowWidth * 0.2;
 const SignInScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
   const handleSignIn = async (user, pass) => {
     try {
-      const res = await getDocs(
-        query(collection(db, "testUser"), where("username", "==", user), where("password", "==", pass))
-      );
-      res.forEach(doc => {
-        const data = doc.data();
-        console.log("Username:", data.username, "Password:", data.password);
-      });
-
-      if (res.empty) {
-        alert("No user found with the provided username and password");
+      const check = await UserAuth(user, pass);
+      console.log(check.message);
+      if (check.status === false) {
+        if (check.message === "auth/invalid-email") {
+        } else if (check.message === "auth/missing-password") {
+        } else if (check.message === "auth/invalid-credential") {
+        }
       } else {
-        console.log("User sign in successful");
-        navigation.replace("Info");
+        navigation.navigate("Info");
       }
-
-    } catch(err) {
+    } catch (err) {
       console.error("SignIn failed", err.message);
     }
+  };
+
+  const googleAuth = () => {
+    // GoogleAuth();
+    signedOut();
   };
 
   return (
@@ -127,7 +130,6 @@ const SignInScreen = ({ navigation }) => {
           <Text
             style={{
               color: "#313047",
-              fontFamily: "inter-black",
               fontSize: 13,
               fontStyle: "normal",
               fontWeight: "700",
@@ -136,13 +138,15 @@ const SignInScreen = ({ navigation }) => {
             FORGOT PASSWORD?
           </Text>
         </TouchableOpacity>
-        <Button style={styles.signInButton} onPress={() => handleSignIn(username, password)}>
+        <Button
+          style={styles.signInButton}
+          onPress={() => handleSignIn(username, password)}
+        >
           <Text
             style={{
               color: "#fff",
               fontWeight: "700",
               fontSize: 20,
-              fontFamily: "inter-black",
             }}
           >
             Sign In
@@ -153,7 +157,6 @@ const SignInScreen = ({ navigation }) => {
           <Text
             style={{
               color: "#313047",
-              fontFamily: "inter-black",
               fontSize: 15,
               fontStyle: "normal",
               fontWeight: "700",
@@ -165,10 +168,7 @@ const SignInScreen = ({ navigation }) => {
           </Text>
           <View style={styles.horizontalLine2} />
         </View>
-        <Button
-          style={styles.googleButton}
-          onPress={() => console.log("google")}
-        >
+        <Button style={styles.googleButton} onPress={() => googleAuth()}>
           <View
             style={{
               flexDirection: "row",
@@ -186,7 +186,6 @@ const SignInScreen = ({ navigation }) => {
                 color: "#767676",
                 fontWeight: "700",
                 fontSize: 20,
-                fontFamily: "inter-black",
               }}
             >
               Continue with Google
@@ -207,7 +206,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     color: "rgba(31, 154, 122, 0.35)",
     opacity: 0.6,
-    fontFamily: "inter-black",
     fontSize: fontSize,
     fontStyle: "normal",
     fontWeight: "800",
@@ -221,7 +219,6 @@ const styles = StyleSheet.create({
   },
   signInText: {
     color: "#313047",
-    fontFamily: "inter-black",
     fontSize: 64,
     fontStyle: "normal",
     fontWeight: "800",
@@ -234,7 +231,6 @@ const styles = StyleSheet.create({
   },
   haveAccText: {
     color: "rgba(49, 48, 71, 0.70)",
-    fontFamily: "inter-black",
     fontSize: 15,
     fontStyle: "normal",
     fontWeight: "700",
@@ -260,7 +256,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
   },
   userInput: {
-    fontFamily: "inter-black",
     fontSize: 15,
     fontStyle: "normal",
     fontWeight: "700",
@@ -273,7 +268,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   passInput: {
-    fontFamily: "inter-black",
     fontSize: 15,
     fontStyle: "normal",
     fontWeight: "700",
