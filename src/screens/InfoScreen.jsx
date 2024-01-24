@@ -17,8 +17,7 @@ import {
   checkState,
 } from "../api/Authentication";
 
-const InfoScreen = ({ navigation, route }) => {
-  const { handleSignOut } = route.params || {};
+const InfoScreen = ({ navigation }) => {
 
   // useEffect(() => {
   //   const backAction = () => {
@@ -36,9 +35,6 @@ const InfoScreen = ({ navigation, route }) => {
 
   const backHandler = () => {
     signedOut();
-    if (handleSignOut) {
-      handleSignOut();
-    }
     navigation.navigate("SignIn");
   };
   return (

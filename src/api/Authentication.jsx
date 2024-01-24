@@ -1,5 +1,3 @@
-import React, { useState, useEffect, createContext, useContext } from "react";
-import { useNavigation } from "@react-navigation/native";
 import { auth } from "../../firebaseConfig";
 import {
   createUserWithEmailAndPassword,
@@ -8,35 +6,38 @@ import {
   onAuthStateChanged,
   signInWithCredential,
   signOut,
+  getIdToken,
 } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const checkState = async () => {
-  return new Promise((resolve, reject) => {
-    const onAuthStateChange = (user) => {
-      if (user) {
-        resolve({ status: true, user });
-      } else {
-        reject({ status: false, message: "User authentication failed." });
-      }
-    };
+// import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
-    const subscriber = onAuthStateChanged(auth, onAuthStateChange);
+// GoogleSignin.configure({
+//   webClientId:
+//     "943554588284-g5m1eb9j50miqph1ggjmi54acrqjm38g.apps.googleusercontent.com",
+// });
 
-    return () => subscriber();
-  });
-};
 
-export const GoogleAuth = async () => {
-  try {
-    const provider = new GoogleAuthProvider();
 
-    const { user } = await signInWithCredential(auth, provider);
+// export const GoogleAuth = async () => {
+//   try {
+//     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+//     // Get the users ID token
+//     const { idToken } = await GoogleSignin.signIn();
 
-    console.log("Successfully signed in with Google:", user.displayName);
-  } catch (error) {
-    console.error("Google Sign-In failed:", error.message);
-  }
-};
+//     // Create a Google credential with the token
+//     const googleCredential = GoogleAuthProvider.credential(idToken);
+
+//     // Sign in with the Google credential
+//     await signInWithCredential(auth, googleCredential);
+
+//     // Handle the sign-in success here if needed
+//     console.log("Google Sign-In successful");
+//   } catch (error) {
+//     console.error("Google Sign-In failed:", error.message);
+//     // Handle the sign-in error here if needed
+//   }
+// };
 
 export const CreateUser = (user, pass) => {
   try {
@@ -58,15 +59,48 @@ export const UserAuth = async (user, pass) => {
   try {
     let email = `${user}@gmail.com`;
     await signInWithEmailAndPassword(auth, email, pass);
-    console.log("User account signed in!");
+    const currentUser = auth.currentUser;
 
-    return { status: true, message: "success" };
+    if (user) {
+      const userToken = await currentUser.getIdToken();
+      await AsyncStorage.setItem("userToken", userToken); 
+
+      console.log("User account signed in!");
+
+      return { status: true, message: "success" };
+    } else {
+      throw new Error("User not found");
+    }
+
   } catch (e) {
     return { status: false, message: e.code };
   }
 };
 
-export const signedOut = () => {
-  signOut(auth);
-  console.log("User signed out!");
+export const checkState = async () => {
+  return new Promise((resolve, reject) => {
+    const onAuthStateChange = (user) => {
+      if (user) {
+        resolve({ status: true, user });
+      } else {
+        reject({ status: false, message: "User authentication failed." });
+      }
+    };
+
+    const subscriber = onAuthStateChanged(auth, onAuthStateChange);
+
+    return () => subscriber();
+  });
+};
+
+export const signedOut = async () => {
+  try {
+    await signOut(auth);
+    await AsyncStorage.removeItem("userToken");
+    console.log("User signed out!");
+    return true; 
+  } catch (e) {
+    console.error("Error signing out:", e);
+    return false; 
+  }
 };

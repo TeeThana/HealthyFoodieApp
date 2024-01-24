@@ -36,16 +36,15 @@ const SignInScreen = ({ navigation }) => {
         } else if (check.message === "auth/invalid-credential") {
         }
       } else {
-        navigation.navigate("Info");
+        navigation.replace("Info");
       }
     } catch (err) {
       console.error("SignIn failed", err.message);
     }
   };
 
-  const googleAuth = () => {
-    // GoogleAuth();
-    signedOut();
+  const googleAuth = async () => {
+    await GoogleAuth();
   };
 
   return (
