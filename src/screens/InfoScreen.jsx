@@ -50,10 +50,10 @@ const InfoScreen = ({ navigation }) => {
     return () => backHandler.remove();
   }, [navigation]);
 
-  // const backHandler = () => {
-  //   signedOut();
-  //   navigation.navigate("SignIn");
-  // };
+  const backHandler = () => {
+    signedOut();
+    navigation.navigate("SignIn");
+  };
 
   return (
     <LinearGradient
@@ -64,7 +64,7 @@ const InfoScreen = ({ navigation }) => {
       style={styles.container}
     >
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => backAction()}>
+        <TouchableOpacity onPress={() => backHandler()}>
           <FontAwesome5
             name="arrow-left"
             size={25}

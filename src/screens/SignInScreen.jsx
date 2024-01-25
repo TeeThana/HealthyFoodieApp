@@ -36,7 +36,8 @@ const SignInScreen = ({ navigation }) => {
         } else if (check.message === "auth/invalid-credential") {
         }
       } else {
-        navigation.replace("Info");
+        console.log("User sign in successful");
+        navigation.replace("Home");
       }
     } catch (err) {
       console.error("SignIn failed", err.message);
