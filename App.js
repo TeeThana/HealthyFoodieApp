@@ -24,7 +24,6 @@ const App = () => {
   const getToken = async () => {
     try {
       const userToken = await AsyncStorage.getItem("userToken");
-      console.log(userToken);
       setToken(userToken);
     } catch (e) {
       console.log("Error getting token:", e);
@@ -43,23 +42,24 @@ const App = () => {
   };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={token ? "Info" : "SignIn"}
-        screenOptions={{ headerShown: false }}
-        initialParams={{ handleSignOut }}
-      >
-        {token ? (
-          <Stack.Screen name="Info" component={InfoScreen} />
-        ) : (
-          <>
-            <Stack.Screen name="SignIn" component={SignInScreen} />
-            <Stack.Screen name="SignUp" component={SignUpScreen} />
-            <Stack.Screen name="Info" component={InfoScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    // <NavigationContainer>
+    //   <Stack.Navigator
+    //     initialRouteName={token ? "Info" : "SignIn"}
+    //     screenOptions={{ headerShown: false }}
+    //     initialParams={{ handleSignOut }}
+    //   >
+    //     {token ? (
+    //       <Stack.Screen name="Info" component={InfoScreen} />
+    //     ) : (
+    //       <>
+    //         <Stack.Screen name="SignIn" component={SignInScreen} />
+    //         <Stack.Screen name="SignUp" component={SignUpScreen} />
+    //         <Stack.Screen name="Info" component={InfoScreen} />
+    //       </>
+    //     )}
+    //   </Stack.Navigator>
+    // </NavigationContainer>
+    <InfoScreen />
   );
 };
 

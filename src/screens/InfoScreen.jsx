@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
   TouchableOpacity,
   Text,
   BackHandler,
+  ScrollView,
 } from "react-native";
+import { TextInput, Button } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
@@ -18,25 +20,41 @@ import {
 } from "../api/Authentication";
 
 const InfoScreen = ({ navigation }) => {
+  const [userData, setUserData] = useState({
+    firstName: "",
+    lastName: "",
+    birthDay: "",
+    height: "",
+    weight: "",
+    allergy: {},
+  })
 
-  // useEffect(() => {
-  //   const backAction = () => {
-  //     navigation.goBack();
-  //     return true;
-  //   };
-
-  //   const backHandler = BackHandler.addEventListener(
-  //     "hardwareBackPress",
-  //     backAction
-  //   );
-
-  //   return () => backHandler.remove();
-  // }, [navigation]);
-
-  const backHandler = () => {
-    signedOut();
-    navigation.navigate("SignIn");
+  const handleChange = (key, value) => {
+    setUserData((prevData) => ({
+      ...prevData,
+      [key]: value,
+    }));
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
+
+  // const backHandler = () => {
+  //   signedOut();
+  //   navigation.navigate("SignIn");
+  // };
+
   return (
     <LinearGradient
       colors={["#00D49D", "#6AFFD8", "#FFFFFF"]}
@@ -46,7 +64,7 @@ const InfoScreen = ({ navigation }) => {
       style={styles.container}
     >
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => backHandler()}>
+        <TouchableOpacity onPress={() => backAction()}>
           <FontAwesome5
             name="arrow-left"
             size={25}
@@ -58,12 +76,41 @@ const InfoScreen = ({ navigation }) => {
         <TouchableOpacity style={styles.editIconContainer}>
           <FontAwesome5 name="pen" size={22} color="#313047" />
         </TouchableOpacity>
-        <View style={styles.frame}>
+        <ScrollView
+          contentContainerStyle={{
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: "35%",
+            backgroundColor: "#F3EDF5",
+            height: "90%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <View style={styles.profileContainer}>
             <View style={styles.profile}></View>
           </View>
-          <View style={styles.box}></View>
-        </View>
+          <View style={styles.box}>
+            <View style={styles.name}>
+              <TextInput
+                style={styles.input}
+                placeholder="FIRST NAME"
+                placeholderTextColor="rgba(49, 48, 71, 0.70)"
+                underlineColor="transparent"
+                value={userData.firstName}
+                onChangeText={(text) => handleChange("firstName", text)}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="FIRST NAME"
+                placeholderTextColor="rgba(49, 48, 71, 0.70)"
+                underlineColor="transparent"
+                value={userData.lastName}
+                onChangeText={(text) => handleChange("lastName", text)}
+              />
+            </View>
+          </View>
+        </ScrollView>
       </View>
     </LinearGradient>
   );
@@ -72,13 +119,6 @@ const InfoScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  frame: {
-    marginTop: "35%",
-    backgroundColor: "#F3EDF5",
-    height: "90%",
-    alignItems: "center",
-    justifyContent: "center",
   },
   profileContainer: {
     height: 132,
@@ -110,6 +150,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 25,
+  },
+  name: {
+    
+  },
+  input: {
+
   },
 });
 
