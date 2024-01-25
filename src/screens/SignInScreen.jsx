@@ -27,6 +27,7 @@ const SignInScreen = ({ navigation }) => {
 
   const handleSignIn = async (user, pass) => {
     try {
+      console.log(user,pass)
       const res = await getDocs(
         query(collection(db, "testUser"), where("username", "==", user), where("password", "==", pass))
       );
@@ -39,7 +40,7 @@ const SignInScreen = ({ navigation }) => {
         alert("No user found with the provided username and password");
       } else {
         console.log("User sign in successful");
-        // navigation.navigate("HomeScreen");
+        navigation.replace("Home");
       }
 
     } catch(err) {
