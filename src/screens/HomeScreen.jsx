@@ -54,6 +54,7 @@ const HomeScreen = ({navigation}) => {
         color: 'white',
         fontSize: 25,
         fontWeight: 'bold',
+        
       },
   });
   
