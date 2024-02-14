@@ -39,6 +39,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 //   }
 // };
 
+const onSignInLoading = false;
+
 export const CreateUser = (user, pass) => {
   try {
     let email = `${user}@gmail.com`;
@@ -64,7 +66,7 @@ export const UserAuth = async (user, pass) => {
     if (user) {
       const userToken = await currentUser.getIdToken();
       await AsyncStorage.setItem("userToken", userToken); 
-
+      
       console.log("User account signed in!");
 
       return { status: true, message: "success" };

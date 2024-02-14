@@ -6,10 +6,12 @@ import {
   Text,
   BackHandler,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 //api
 import {
@@ -20,10 +22,11 @@ import {
 } from "../api/Authentication";
 
 const InfoScreen = ({ navigation }) => {
+  const [showPicker, setShowPicker] = useState(false);
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
-    birthDay: "",
+    birthDay: new Date(),
     height: "",
     weight: "",
     allergy: {},
@@ -32,9 +35,33 @@ const InfoScreen = ({ navigation }) => {
   const handleChange = (key, value) => {
     setUserData((prevData) => ({
       ...prevData,
-      [key]: value,
+      [key]: key === "birthDay" ? new Date(value) : value,
     }));
   };
+
+  const toggleDatePicker = () => {
+    setShowPicker(!showPicker);
+  };
+
+  const onDatePickerChange = ({ type }, selectedDate) => {
+    if (type === "set") {
+      const currentDate = selectedDate || userData.birthDay;
+      setUserData((prevData) => ({
+        ...prevData,
+        birthDay: currentDate,
+      }));
+    } else {
+      toggleDatePicker();
+    }
+  };
+
+  const confirmDateofBirth = () => {
+    setUserData((prevData) => ({
+      ...prevData,
+      birthDay: userData.birthDay,
+    }));
+    toggleDatePicker();
+  }
 
   useEffect(() => {
     const backAction = () => {
@@ -92,22 +119,102 @@ const InfoScreen = ({ navigation }) => {
           </View>
           <View style={styles.box}>
             <View style={styles.name}>
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontStyle: "normal",
+                  fontWeight: "700",
+                  color: "rgba(49, 48, 71, 0.70)",
+                }}
+              >
+                FIRST NAME
+              </Text>
               <TextInput
                 style={styles.input}
-                placeholder="FIRST NAME"
-                placeholderTextColor="rgba(49, 48, 71, 0.70)"
                 underlineColor="transparent"
                 value={userData.firstName}
                 onChangeText={(text) => handleChange("firstName", text)}
               />
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontStyle: "normal",
+                  fontWeight: "700",
+                  color: "rgba(49, 48, 71, 0.70)",
+                  marginTop: "5%",
+                }}
+              >
+                LAST NAME
+              </Text>
               <TextInput
                 style={styles.input}
-                placeholder="FIRST NAME"
-                placeholderTextColor="rgba(49, 48, 71, 0.70)"
                 underlineColor="transparent"
                 value={userData.lastName}
                 onChangeText={(text) => handleChange("lastName", text)}
               />
+            </View>
+            <View style={styles.date}>
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontStyle: "normal",
+                  fontWeight: "700",
+                  color: "rgba(49, 48, 71, 0.70)",
+                  marginTop: "5%",
+                }}
+              >
+                DATE OF BIRTH
+              </Text>
+              {showPicker ? (
+                <View>
+                  <DateTimePicker
+                    style={{ height: "55%" }}
+                    mode="date"
+                    display="spinner"
+                    onChange={onDatePickerChange}
+                    value={userData.birthDay}
+                  />
+                  {Platform.OS === "ios" && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingHorizontal: "15%",
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={{ marginTop: 10, alignItems: "center" }}
+                        onPress={toggleDatePicker}
+                      >
+                        <Text style={styles.cancelButton}>Cancel</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{ marginTop: 10, alignItems: "center" }}
+                        onPress={confirmDateofBirth}
+                      >
+                        <Text style={styles.confirmButton}>Confirm</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
+              ) : (
+                <Pressable onPress={toggleDatePicker}>
+                  <TextInput
+                    style={styles.input}
+                    underlineColor="transparent"
+                    defaultValue={userData.birthDay.toLocaleDateString()}
+                    placeholder="DD/MM/YY"
+                    placeholderTextColor={"#313047"}
+                    onChangeText={(date) => handleChange("birthDay", date)}
+                    editable={false}
+                    onPressIn={toggleDatePicker}
+                  />
+                </Pressable>
+              )}
+            </View>
+            <View style={styles.heightWeight}>
+
             </View>
           </View>
         </ScrollView>
@@ -147,15 +254,45 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     height: "75%",
     width: "90%",
-    alignItems: "center",
-    justifyContent: "center",
     borderRadius: 25,
   },
   name: {
-    
+    paddingHorizontal: "10%",
+    paddingTop: "10%",
   },
   input: {
-
+    fontSize: 15,
+    fontStyle: "normal",
+    fontWeight: "700",
+    height: 40,
+    width: "100%",
+    borderBottomColor: "#F4F4F4",
+    borderBottomWidth: 3,
+    // marginHorizontal: "12%",
+    // marginTop: "5%",
+    backgroundColor: "#fff",
+  },
+  date: {
+    paddingHorizontal: "10%",
+    left: 0,
+  },
+  cancelButton: {
+    color: "red",
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 5,
+  },
+  confirmButton: {
+    color: "blue",
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 5,
+  },
+  heightWeight: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: "15%",
   },
 });
 
