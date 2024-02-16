@@ -1,4 +1,4 @@
-# HealthyGenApp
+# HealthyFoodieApp
 Graduation  Project. HealthyGen: Health Application with Artificial Intelligence System
 
 # Start app with expo
