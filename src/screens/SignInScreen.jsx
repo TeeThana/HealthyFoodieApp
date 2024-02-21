@@ -37,7 +37,6 @@ const SignInScreen = ({ navigation }) => {
         }
       } else {
         console.log("User sign in successful");
-        navigation.replace("Home");
       }
     } catch (err) {
       console.error("SignIn failed", err.message);

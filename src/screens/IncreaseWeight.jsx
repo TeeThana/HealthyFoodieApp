@@ -29,7 +29,6 @@ const IncreaseWeight = ({ navigation }) => {
 
   const backHandler = () => {
     signedOut();
-    navigation.navigate("SignIn");
   };
 
   return (

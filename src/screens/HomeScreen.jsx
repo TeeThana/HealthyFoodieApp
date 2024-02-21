@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
 
 const HomeScreen = ({navigation}) => {
+
     const handleIncrease = () => {
-        navigation.navigate("Increase");
-    }
+      navigation.navigate("Increase");
+    };
 
     const handleDecrease = () => {
-        navigation.navigate("Decrease");
-    }
+      navigation.navigate("Increase");
+    };
 
     return (
+        
         <View style={styles.container}>
           <TouchableOpacity style={styles.whiteContainer} onPress={handleIncrease}>
             <Text style={styles.increseText}> increase your weight</Text>

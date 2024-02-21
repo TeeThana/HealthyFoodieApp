@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const FriendsScreen = () => {
+const MyRewardsScreen = () => {
     return (
         <View style= {styles.contianer}>
-            <Text>Friends</Text>
+            <Text>My Rewards</Text>
         </View>
     )
 }
@@ -17,4 +17,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default FriendsScreen;
+export default MyRewardsScreen;
