@@ -6,6 +6,7 @@ import SignUpScreen from "../screens/SignUpScreen";
 import HomeScreen from "../screens/HomeScreen";
 import IncreaseWeight from "../screens/IncreaseWeight";
 import DecreaseWeight from "../screens/DecreaseWeight";
+import ProgramScreen from "../screens/ProgramScreen";
 import AccountScreen from "../screens/AccountScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import RewardsScreen from "../screens/RewardsScreen";
@@ -30,6 +31,7 @@ const HomeStack = () => {
             <Home.Screen name="Home" component={HomeScreen} />
             <Home.Screen name="Increase" component={IncreaseWeight} />
             <Home.Screen name="Decrease" component={DecreaseWeight} />
+            <Home.Screen name="Program" component={ProgramScreen} />
         </Home.Navigator>
     );
   };

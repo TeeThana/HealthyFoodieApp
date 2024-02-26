@@ -11,8 +11,10 @@ import {
 import { TextInput, Button } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DatePicker from "@react-native-community/datetimepicker";
 import tw from "twrnc";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 //api
 import {
@@ -26,49 +28,18 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 
 const InfoScreen = ({ navigation }) => {
-  const [showPicker, setShowPicker] = useState(false);
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
-    birthDay: new Date(),
+    birthDay: "",
     height: "",
     weight: "",
     allergy: [],
   })
 
-  const handleChange = (key, value) => {
-    setUserData((prevData) => ({
-      ...prevData,
-      [key]: key === "birthDay" ? new Date(value) : value,
-    }));
-  };
-
-  const toggleDatePicker = () => {
-    setShowPicker(!showPicker);
-  };
-
-  const onDatePickerChange = ({ type }, selectedDate) => {
-    if (type === "set") {
-      const currentDate = selectedDate || userData.birthDay;
-      setUserData((prevData) => ({
-        ...prevData,
-        birthDay: currentDate,
-      }));
-    } else {
-      toggleDatePicker();
-    }
-  };
-
-  const confirmDateofBirth = () => {
-    setUserData((prevData) => ({
-      ...prevData,
-      birthDay: userData.birthDay,
-    }));
-    toggleDatePicker();
-  }
-
   useEffect(() => {
     console.log('User Data:', userData);
+    console.log('User Date:', selectedDate);
   }, [userData]);
 
   const handleInputChange = (inputName, text) => {
@@ -92,6 +63,37 @@ const InfoScreen = ({ navigation }) => {
       }));
       setAllergyInput("");
     }
+  };
+
+  const handleGenerate = async (userData) => {
+    console.log('Generate:', userData);
+    try{
+      await addDoc(collection(db, "UserInfo"), {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        birthDay: userData.birthDay,
+        height: userData.height,
+        weight: userData.weight,
+        allergy: userData.allergy,
+      });
+      console.log('Added Info Successfully')
+    }
+    catch(err){
+      console.error('Generate Error!', err.message);
+    }
+  }
+
+  const currentDate = new Date();
+  const [selectedDate, setSelectedDate] = useState(currentDate);
+
+  const handleDateChange = (date) => {
+    console.log(date)
+    setSelectedDate(new Date(date)); // แปลง string เป็น Date object
+    console.log(selectedDate); // นี่อาจจะแสดงค่าล่าสุด เนื่องจาก setState เป็น asynchronous
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      birthDay: selectedDate
+    }));
   };
 
   return (
@@ -131,14 +133,40 @@ const InfoScreen = ({ navigation }) => {
               <TextInput style={tw`bg-transparent text-base mb-5 h-10`} onChangeText={(text) => handleInputChange('firstName', text)}></TextInput>
               <Text style={tw`uppercase font-bold`}>lastname</Text>
               <TextInput style={tw`bg-transparent text-base mb-5 h-10`} onChangeText={(text) => handleInputChange('lastName', text)}></TextInput>
+              <View>
+                <Text>Select Date:</Text>
+                <DatePicker
+                  style={{ width: 200 }}
+                  value={selectedDate}
+                  mode="date"
+                  placeholder={selectedDate}
+                  format="YYYY-MM-DD"
+                  minDate="2022-01-01"
+                  maxDate="2025-12-31"
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  customStyles={{
+                    dateIcon: {
+                      position: 'absolute',
+                      left: 0,
+                      top: 4,
+                      marginLeft: 0,
+                    },
+                    dateInput: {
+                      marginLeft: 36,
+                    },
+                  }}
+                  onDateChange={handleDateChange}
+                />
+              </View>
               <View style={tw`flex-row`}>
                 <View style={tw`pr-10`}>
                   <Text style={tw`uppercase font-bold `} >height</Text>
-                  <TextInput style={tw`bg-transparent text-base mb-5 h-10`} onChangeText={(text) => handleInputChange('height', text)}></TextInput>
+                  <TextInput style={tw`bg-transparent text-base mb-5 h-10`} keyboardType="numeric" onChangeText={(text) => handleInputChange('height', text)}></TextInput>
                 </View>
                 <View>
                   <Text style={tw`uppercase font-bold`}>weight</Text>
-                  <TextInput style={tw`bg-transparent text-base mb-5 h-10`} onChangeText={(text) => handleInputChange('weight', text)}></TextInput>
+                  <TextInput style={tw`bg-transparent text-base mb-5 h-10`} keyboardType="numeric" onChangeText={(text) => handleInputChange('weight', text)}></TextInput>
                 </View>
               </View>
               <View>
@@ -152,11 +180,17 @@ const InfoScreen = ({ navigation }) => {
                 {userData.allergy.map((allergy, index) => (
                   <Text key={index}>{allergy}</Text>
                 ))}
+
+              </View>
+              <View>
+              <TouchableOpacity style={{ backgroundColor: '#00D49D', ...tw` justify-center items-center rounded-lg mx-5 h-10` }} onPress={() => handleGenerate(userData)}>
+                <Text style={tw`uppercase text-white text-base font-bold`}>
+                  generate
+                </Text>
+              </TouchableOpacity>
               </View>
             </View>
-
           </View>
-
         </ScrollView>
       </View>
     </LinearGradient>
@@ -238,65 +272,3 @@ const styles = StyleSheet.create({
 
 
 export default InfoScreen;
-
-
-// <View style={styles.date}>
-// <Text
-//   style={{
-//     fontSize: 15,
-//     fontStyle: "normal",
-//     fontWeight: "700",
-//     color: "rgba(49, 48, 71, 0.70)",
-//     marginTop: "5%",
-//   }}
-// >
-//   DATE OF BIRTH
-// </Text>
-// {showPicker ? (
-//   <View>
-//     <DateTimePicker
-//       style={{ height: "55%" }}
-//       mode="date"
-//       display="spinner"
-//       onChange={onDatePickerChange}
-//       value={userData.birthDay}
-//     />
-//     {Platform.OS === "ios" && (
-//       <View
-//         style={{
-//           flexDirection: "row",
-//           justifyContent: "space-between",
-//           alignItems: "center",
-//           paddingHorizontal: "15%",
-//         }}
-//       >
-//         <TouchableOpacity
-//           style={{ marginTop: 10, alignItems: "center" }}
-//           onPress={toggleDatePicker}
-//         >
-//           <Text style={styles.cancelButton}>Cancel</Text>
-//         </TouchableOpacity>
-//         <TouchableOpacity
-//           style={{ marginTop: 10, alignItems: "center" }}
-//           onPress={confirmDateofBirth}
-//         >
-//           <Text style={styles.confirmButton}>Confirm</Text>
-//         </TouchableOpacity>
-//       </View>
-//     )}
-//   </View>
-// ) : (
-//   <Pressable onPress={toggleDatePicker}>
-//     <TextInput
-//       style={styles.input}
-//       underlineColor="transparent"
-//       defaultValue={userData.birthDay.toLocaleDateString()}
-//       placeholder="DD/MM/YY"
-//       placeholderTextColor={"#313047"}
-//       onChangeText={(date) => handleChange("birthDay", date)}
-//       editable={false}
-//       onPressIn={toggleDatePicker}
-//     />
-//   </Pressable>
-// )}
-// </View>

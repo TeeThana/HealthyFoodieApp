@@ -25,6 +25,7 @@ const IncreaseWeight = ({ navigation }) => {
 
   const handleSaveWeight = () => {
     console.log("Weight:", weight);
+    navigation.navigate("Program", { weight: weight });
   };
 
   const backHandler = () => {
