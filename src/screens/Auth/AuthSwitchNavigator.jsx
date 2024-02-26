@@ -93,11 +93,18 @@ function AuthSwitchNavigator () {
   const [user, setUser] = useState(User || null);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      console.log("user:", user);
-      setUser(user);
-    });
+    unsubscribeAuth();
   }, []);
+
+  const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      console.log(JSON.stringify("user:", user, null, 2));
+      setUser(user);
+    } else {
+      console.log("no user");
+      setUser(null);
+    }
+  });
 
   return (
     <NavigationContainer>

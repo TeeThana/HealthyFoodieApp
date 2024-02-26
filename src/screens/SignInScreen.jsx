@@ -16,15 +16,115 @@ import {
   UserAuth,
   signedOut,
   checkState,
+  createTokenWithCode,
 } from "../api/Authentication";
+import { auth } from "../../firebaseConfig";
+
+//auth
+import { useAuthRequest, makeRedirectUri } from "expo-auth-session";
+import * as Google from "expo-auth-session/providers/google";
+import * as WebBrowser from "expo-web-browser";
+import {
+  signInWithCredential,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+} from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+WebBrowser.maybeCompleteAuthSession();
+
+const discovery = {
+  authorizationEndpoint: "https://github.com/login/oauth/authorize",
+  tokenEndpoint: "https://github.com/login/oauth/access_token",
+  revocationEndpoint: `https://github.com/settings/connections/applications/${process.env.EXPO_PUBLIC_GITHUB_CLIENT_ID}`,
+};
 
 const windowWidth = Dimensions.get("window").width;
 const fontSize = windowWidth * 0.2;
 
 const SignInScreen = ({ navigation }) => {
+  const [userInfo, setUserInfo] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    iosClientId:
+      "267329452619-7jmva6ulo836cfer9433ft61pn12k5b3.apps.googleusercontent.com",
+    androidClientId:
+      "267329452619-htevif1rujracgha7jr7qn3iip50bnn7.apps.googleusercontent.com",
+    webClientId:
+      "267329452619-r9mhl9gntj5kll9sjoea2djks161rojo.apps.googleusercontent.com",
+  });
+
+  // useEffect(() => {
+  //   if (response?.type === "success") {
+  //     const { id_token } = response.params;
+  //     const credentials = GoogleAuthProvider.credential(id_token);
+  //     signInWithCredential(auth, credentials);
+  //   }
+  // }, [response]);
+
+  // useEffect(() => {
+  //   const unsub = onAuthStateChanged(auth, async (user) => {
+  //     if (user) {
+  //       console.log(JSON.stringify(user, null, 2));
+  //       setUserInfo(user);
+  //     } else {
+  //       console.log("else")
+  //     }
+  //   })
+
+  //   return () => unsub();
+  // }, []);
+
+  useEffect(() => {
+    handleGoogleSignIn();
+    console.log("user: ", userInfo);
+  }, [response]);
+
+  const handleGoogleSignIn = async () => {
+    const user = await AsyncStorage.getItem("@user");
+    if (!user) {
+      if (response?.type === "success") {
+        await getUserInfo(response.authentication.accessToken);
+      }
+    }
+  };
+
+  const getUserInfo = async (token) => {
+    if (!token) return;
+    try {
+      const response = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const user = await response.json();
+      await AsyncStorage.setItem("@user", JSON.stringify(user));
+      setUserInfo(user);
+    } catch (err) {
+      console.error("Google auth error: ", err);
+    }
+  };
+
+  const handleGitHubResponse = async () => {
+    if (response?.type == "success") {
+      const { code } = response.params;
+      const { token_type, scope, access_token } = await createTokenWithCode(
+        code
+      );
+      console.log("GitHub response: ", { token_type, scope, access_token });
+
+      if (!access_token) return;
+
+      const credential = GithubAuthProvider.credential(access_token);
+      const data = await signInWithCredential(auth, credential);
+      console.log("data: ", data);
+    }
+  };
 
   const handleSignIn = async (user, pass) => {
     try {
@@ -41,10 +141,6 @@ const SignInScreen = ({ navigation }) => {
     } catch (err) {
       console.error("SignIn failed", err.message);
     }
-  };
-
-  const googleAuth = async () => {
-    await GoogleAuth();
   };
 
   return (
@@ -167,30 +263,28 @@ const SignInScreen = ({ navigation }) => {
           </Text>
           <View style={styles.horizontalLine2} />
         </View>
-        <Button style={styles.googleButton} onPress={() => googleAuth()}>
-          <View
-            style={{
+        <TouchableOpacity
+          style={[
+            styles.googleButton,
+            {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
               width: "auto",
-            }}
-          >
+            },
+          ]}
+          onPress={() => promptAsync()}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Image
               source={require("../assets/images/google.png")}
               style={{ width: 35, height: 35, marginRight: 18 }}
             />
-            <Text
-              style={{
-                color: "#767676",
-                fontWeight: "700",
-                fontSize: 20,
-              }}
-            >
+            <Text style={{ color: "#767676", fontWeight: "700", fontSize: 20 }}>
               Continue with Google
             </Text>
           </View>
-        </Button>
+        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
@@ -320,7 +414,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
-    backgroundColor: "#FFF",
+    backgroundColor: "#F8F8F8",
     shadowOffset: {
       width: 0,
       height: -4,

@@ -28,6 +28,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-
+// ios: 267329452619-7jmva6ulo836cfer9433ft61pn12k5b3.apps.googleusercontent.com
+// android: 267329452619-htevif1rujracgha7jr7qn3iip50bnn7.apps.googleusercontent.com
+// web: 267329452619-r9mhl9gntj5kll9sjoea2djks161rojo.apps.googleusercontent.com
 
 export { app, auth, db };

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "HealthyGenApp",
-    "slug": "HealthyGenApp",
+    "name": "HealthyFoodie",
+    "slug": "HealthyFoodie",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,7 +21,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.kilrios.HealthyFoodie"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -33,8 +34,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2c855fa7-44aa-416a-b344-ce451914daba"
+        "projectId": "b6d5d2eb-f6c2-4bba-a40c-77d9cf3e5180"
       }
-    }
+    },
+    "scheme": "HealthyFoodie"
   }
 }
