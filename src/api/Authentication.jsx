@@ -10,36 +10,24 @@ import {
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// import { GoogleSignin } from "@react-native-google-signin/google-signin";
+export const createTokenWithCode = async (code) => {
+  console.log(code);
+  const url =
+    `https://github.com/login/oauth/access_token` +
+    `?client_id=${process.env.EXPO_PUBLIC_GITHUB_CLIENT_ID}` +
+    `&client_secret=${process.env.EXPO_PUBLIC_GITHUB_CLIENT_SECRET}` +
+    `&code=${code}`;
 
-// GoogleSignin.configure({
-//   webClientId:
-//     "943554588284-g5m1eb9j50miqph1ggjmi54acrqjm38g.apps.googleusercontent.com",
-// });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
 
-
-
-// export const GoogleAuth = async () => {
-//   try {
-//     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-//     // Get the users ID token
-//     const { idToken } = await GoogleSignin.signIn();
-
-//     // Create a Google credential with the token
-//     const googleCredential = GoogleAuthProvider.credential(idToken);
-
-//     // Sign in with the Google credential
-//     await signInWithCredential(auth, googleCredential);
-
-//     // Handle the sign-in success here if needed
-//     console.log("Google Sign-In successful");
-//   } catch (error) {
-//     console.error("Google Sign-In failed:", error.message);
-//     // Handle the sign-in error here if needed
-//   }
-// };
-
-const onSignInLoading = false;
+  return response.json();
+};
 
 export const CreateUser = (user, pass) => {
   try {
@@ -91,7 +79,7 @@ export const checkState = async () => {
 
     const subscriber = onAuthStateChanged(auth, onAuthStateChange);
 
-    return () => subscriber();
+    return () => subscriber(); 
   });
 };
 

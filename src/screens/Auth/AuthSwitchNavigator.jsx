@@ -94,8 +94,13 @@ function AuthSwitchNavigator () {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      console.log("user:", user);
-      setUser(user);
+      if (user) {
+        console.log(JSON.stringify(user, null, 2));
+        setUser(user.email.split("@")[0]);
+      } else {
+        console.log("no user");
+        setUser(null);
+      }
     });
   }, []);
 

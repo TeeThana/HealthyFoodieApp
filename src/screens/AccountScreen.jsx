@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
         height: '25%',
         width: '100%',
         backgroundColor: 'white',
-        borderRadius: '25%',
+        // borderRadius: '25%',
     },
     background: {
         flex: 1,

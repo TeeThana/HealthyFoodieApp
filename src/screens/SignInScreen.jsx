@@ -18,8 +18,11 @@ import {
   checkState,
 } from "../api/Authentication";
 
+
 const windowWidth = Dimensions.get("window").width;
 const fontSize = windowWidth * 0.2;
+
+
 
 const SignInScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -41,10 +44,6 @@ const SignInScreen = ({ navigation }) => {
     } catch (err) {
       console.error("SignIn failed", err.message);
     }
-  };
-
-  const googleAuth = async () => {
-    await GoogleAuth();
   };
 
   return (
@@ -167,30 +166,28 @@ const SignInScreen = ({ navigation }) => {
           </Text>
           <View style={styles.horizontalLine2} />
         </View>
-        <Button style={styles.googleButton} onPress={() => googleAuth()}>
-          <View
-            style={{
+        <TouchableOpacity
+          style={[
+            styles.googleButton,
+            {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
               width: "auto",
-            }}
-          >
+            },
+          ]}
+          onPress={() => promptAsync()}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Image
               source={require("../assets/images/google.png")}
               style={{ width: 35, height: 35, marginRight: 18 }}
             />
-            <Text
-              style={{
-                color: "#767676",
-                fontWeight: "700",
-                fontSize: 20,
-              }}
-            >
+            <Text style={{ color: "#767676", fontWeight: "700", fontSize: 20 }}>
               Continue with Google
             </Text>
           </View>
-        </Button>
+        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
