@@ -29,7 +29,7 @@ const IncreaseWeight = ({ navigation }) => {
   };
 
   const backHandler = () => {
-    signedOut();
+    // signedOut();
   };
 
   return (
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     marginBottom: 30,
     fontWeight: "bold",
-    fontSize: "25px",
   },
   input: {
     height: 50,
