@@ -34,7 +34,6 @@ const ProgramScreen = ({ navigation, route }) => {
           </View>
           <ProgressBar weight={weight}/>
         </View>
-        
       </LinearGradient>
       </TouchableWithoutFeedback>
   );
