@@ -103,6 +103,12 @@ const InfoScreen = ({ navigation }) => {
   };
 
   const [selectedGender, setSelectedGender] = useState(null);
+  // const [showGender, setShowGender] = useState(false);
+  // const [genderText, setGenderText] = useState("Gender");
+
+  // const showGenderOption = () => {
+  //   setShowGender(!showGender);
+  // }
 
   const handleGenderSelect = (gender) => {
     setSelectedGender(gender);
@@ -114,13 +120,19 @@ const InfoScreen = ({ navigation }) => {
 
   const [date, setDate] = useState(new Date());
   // const [selectedDate, setSelectedDate] = useState();
-  const [show, setShow] = useState(false);
-  const [dateText, setDateText] = useState('Hi');
+  const [showDate, setShowDate] = useState(false);
+  const [dateText, setDateText] = useState(
+    new Date().toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+  );
 
 
   const ChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'ios');
+    setShowDate(Platform.OS === 'ios');
     setDate(currentDate)
     let tempDate = new Date(currentDate)
     let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
@@ -134,7 +146,7 @@ const InfoScreen = ({ navigation }) => {
   }
 
   const showMode = () => {
-    setShow(true);
+    setShowDate(true);
   }
 
   return (
@@ -160,15 +172,16 @@ const InfoScreen = ({ navigation }) => {
         </TouchableOpacity>
         <ScrollView
           contentContainerStyle={{
-            marginTop: "35%",
+            marginTop: "10%",
             backgroundColor: "#F3EDF5",
-            height: "90%",
+            height: "100%",
+            marginBottom: "15%",
           }}
         >
           {/* <View style={styles.profileContainer}>
             <View style={styles.profile}></View>
           </View> */}
-          <View style={tw`bg-white rounded-xl mt-30 mx-5`}>
+          <View style={tw`bg-white rounded-xl mt-5 mx-5 pb-auto py-5`}>
             <View style={tw`mx-5 mt-5`}>
               <Text style={tw`uppercase font-bold`}>firstname</Text>
               <TextInput
@@ -180,30 +193,39 @@ const InfoScreen = ({ navigation }) => {
                 style={tw`bg-transparent text-base mb-5 h-10`}
                 onChangeText={(text) => handleInputChange("lastName", text)}
               ></TextInput>
-              <Picker
-                selectedValue={selectedGender}
-                onValueChange={(itemValue, itemIndex) =>
-                  handleGenderSelect(itemValue)
-                }
-              >
-                <Picker.Item label="Male" value="male" />
-                <Picker.Item label="Female" value="female" />
-                <Picker.Item label="Other" value="other" />
-              </Picker>
               <View style={tw`mt-2 mb-5`}>
-                <Text>Select Date:</Text>
+                <Text style={tw`uppercase font-bold mb-3`}>gender</Text>
+                <View style={{
+                    backgroundColor: "#F3EDF5",
+                    ...tw` rounded-lg h-10 justify-center w-1/2`,
+                  }}>
+                  <Picker
+                      
+                      selectedValue={selectedGender}
+                      onValueChange={(itemValue, itemIndex) =>
+                        handleGenderSelect(itemValue)
+                      }
+                    >
+                      <Picker.Item label="Male" value="male" />
+                      <Picker.Item label="Female" value="female" />
+                      <Picker.Item label="Other" value="other" />
+                  </Picker>
+                </View>
+              </View>
+              <View style={tw`mt-2 mb-5`}>
+                <Text style={tw`uppercase font-bold mb-3`}>date of birth</Text>
                 <TouchableOpacity
                   style={{
-                    backgroundColor: "#00D49D",
-                    ...tw` justify-center items-center rounded-lg mx-5 h-10`,
+                    backgroundColor: "#F3EDF5",
+                    ...tw` rounded-lg h-10 w-1/2 items-center justify-center`,
                   }}
                   onPress={showMode}
                 >
-                  <Text style={tw`uppercase text-white text-base font-bold`}>
+                  <Text style={tw`text-black text-base`}>
                     {dateText}
                   </Text>
                 </TouchableOpacity>
-                {show && (<DatePicker
+                {showDate && (<DatePicker
                     value={date}
                     mode="date"
                     format="YYYY-MM-DD"
@@ -212,7 +234,7 @@ const InfoScreen = ({ navigation }) => {
               </View>
               <View style={tw`flex-row`}>
                 <View style={tw`pr-10`}>
-                  <Text style={tw`uppercase font-bold `}>height</Text>
+                  <Text style={tw`uppercase font-bold`}>height</Text>
                   <TextInput
                     style={tw`bg-transparent text-base mb-5 h-10`}
                     keyboardType="numeric"
@@ -232,7 +254,7 @@ const InfoScreen = ({ navigation }) => {
                 <Text style={tw`uppercase font-bold`}>allergy</Text>
                 <View style={tw`flex-row`}>
                   <TextInput
-                    style={tw`bg-transparent text-base mb-5 h-10 w-5/6`}
+                    style={tw`bg-transparent text-base h-10 w-5/6`}
                     onChangeText={(text) => setAllergyInput(text)}
                     value={allergyInput}
                   ></TextInput>
@@ -245,9 +267,9 @@ const InfoScreen = ({ navigation }) => {
                   />
                 </View>
               </View>
-              <View>
+              <View style={tw`m-5`}>
                 {userData.allergy.map((allergy, index) => (
-                  <Text key={index}>{allergy}</Text>
+                  <Text style={tw`font-bold`} key={index}>- {allergy}</Text>
                 ))}
               </View>
               <View>
