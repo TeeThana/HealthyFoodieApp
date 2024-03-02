@@ -36,3 +36,6 @@ yarn-error.*
 
 #eas
 eas.json
+
+#android
+android/

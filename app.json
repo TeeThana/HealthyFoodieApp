@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "HealthyFoodie",
-    "slug": "HealthyFoodie",
+    "name": "healthyfoodie",
+    "slug": "healthyfoodie",
+    "scheme": "healthyfoodie",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -34,7 +35,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2c855fa7-44aa-416a-b344-ce451914daba"
+        "projectId": "447772d4-545a-4156-a322-e9ca0d71fb2c"
       }
     }
   }

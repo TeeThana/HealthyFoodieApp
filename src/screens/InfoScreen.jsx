@@ -7,14 +7,15 @@ import {
   BackHandler,
   ScrollView,
   Pressable,
+  Platform,
 } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
+import { Picker } from "@react-native-picker/picker";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import DatePicker from "@react-native-community/datetimepicker";
 import tw from "twrnc";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //api
 import {
@@ -24,23 +25,40 @@ import {
   checkState,
 } from "../api/Authentication";
 
+//Firestore
+import { addDoc, collection, collectionGroup } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+
 //icons
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome } from "@expo/vector-icons";
 
 const InfoScreen = ({ navigation }) => {
   const [userData, setUserData] = useState({
+    username: "",
     firstName: "",
     lastName: "",
-    birthDay: "",
+    age: "",
+    gender: "",
     height: "",
     weight: "",
     allergy: [],
-  })
+    date: "",
+  });
 
   useEffect(() => {
-    console.log('User Data:', userData);
-    console.log('User Date:', selectedDate);
-  }, [userData]);
+    const fetchUserData = async () => {
+      const username = await AsyncStorage.getItem("username");
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        username: username,
+      }));
+      console.log("User Data:", username, userData);
+    };
+
+    fetchUserData();
+  }, []);
+
+  useEffect(() => { }, [userData]);
 
   const handleInputChange = (inputName, text) => {
     setUserData((prevInputValues) => ({
@@ -50,7 +68,7 @@ const InfoScreen = ({ navigation }) => {
   };
 
   const backHandler = () => {
-    signedOut();
+    // signedOut();
   };
 
   const [allergyInput, setAllergyInput] = useState("");
@@ -66,35 +84,58 @@ const InfoScreen = ({ navigation }) => {
   };
 
   const handleGenerate = async (userData) => {
-    console.log('Generate:', userData);
-    try{
+    console.log("Generate:", userData);
+    try {
       await addDoc(collection(db, "UserInfo"), {
+        username: userData.username,
         firstName: userData.firstName,
         lastName: userData.lastName,
-        birthDay: userData.birthDay,
+        age: userData.age,
+        gender: userData.gender,
         height: userData.height,
         weight: userData.weight,
         allergy: userData.allergy,
       });
-      console.log('Added Info Successfully')
+      console.log("Added Info Successfully");
+    } catch (err) {
+      console.error("Generate Error!", err.message);
     }
-    catch(err){
-      console.error('Generate Error!', err.message);
-    }
-  }
+  };
 
-  const currentDate = new Date();
-  const [selectedDate, setSelectedDate] = useState(currentDate);
+  const [selectedGender, setSelectedGender] = useState(null);
 
-  const handleDateChange = (date) => {
-    console.log(date)
-    setSelectedDate(new Date(date)); // แปลง string เป็น Date object
-    console.log(selectedDate); // นี่อาจจะแสดงค่าล่าสุด เนื่องจาก setState เป็น asynchronous
+  const handleGenderSelect = (gender) => {
+    setSelectedGender(gender);
     setUserData((prevUserData) => ({
       ...prevUserData,
-      birthDay: selectedDate
+      gender: gender,
     }));
   };
+
+  const [date, setDate] = useState(new Date());
+  // const [selectedDate, setSelectedDate] = useState();
+  const [show, setShow] = useState(false);
+  const [dateText, setDateText] = useState('Hi');
+
+
+  const ChangeDate = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'ios');
+    setDate(currentDate)
+    let tempDate = new Date(currentDate)
+    let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+    setUserData(prevUserData => ({
+      ...prevUserData,
+      date: fDate,
+    }));
+    setDateText(fDate)
+    console.log(fDate);
+    console.log(userData);
+  }
+
+  const showMode = () => {
+    setShow(true);
+  }
 
   return (
     <LinearGradient
@@ -104,7 +145,7 @@ const InfoScreen = ({ navigation }) => {
       locations={[0, 0.3, 1]}
       style={styles.container}
     >
-      <View>
+      <ScrollView>
         <TouchableOpacity onPress={() => backHandler()}>
           <FontAwesome5
             name="arrow-left"
@@ -127,72 +168,105 @@ const InfoScreen = ({ navigation }) => {
           {/* <View style={styles.profileContainer}>
             <View style={styles.profile}></View>
           </View> */}
-          <View style={tw`bg-white rounded-xl mt-30 mx-5 h-3/5`}>
+          <View style={tw`bg-white rounded-xl mt-30 mx-5`}>
             <View style={tw`mx-5 mt-5`}>
               <Text style={tw`uppercase font-bold`}>firstname</Text>
-              <TextInput style={tw`bg-transparent text-base mb-5 h-10`} onChangeText={(text) => handleInputChange('firstName', text)}></TextInput>
+              <TextInput
+                style={tw`bg-transparent text-base mb-5 h-10`}
+                onChangeText={(text) => handleInputChange("firstName", text)}
+              ></TextInput>
               <Text style={tw`uppercase font-bold`}>lastname</Text>
-              <TextInput style={tw`bg-transparent text-base mb-5 h-10`} onChangeText={(text) => handleInputChange('lastName', text)}></TextInput>
-              <View>
+              <TextInput
+                style={tw`bg-transparent text-base mb-5 h-10`}
+                onChangeText={(text) => handleInputChange("lastName", text)}
+              ></TextInput>
+              <Picker
+                selectedValue={selectedGender}
+                onValueChange={(itemValue, itemIndex) =>
+                  handleGenderSelect(itemValue)
+                }
+              >
+                <Picker.Item label="Male" value="male" />
+                <Picker.Item label="Female" value="female" />
+                <Picker.Item label="Other" value="other" />
+              </Picker>
+              <View style={tw`mt-2 mb-5`}>
                 <Text>Select Date:</Text>
-                <DatePicker
-                  style={{ width: 200 }}
-                  value={selectedDate}
-                  mode="date"
-                  placeholder={selectedDate}
-                  format="YYYY-MM-DD"
-                  minDate="2022-01-01"
-                  maxDate="2025-12-31"
-                  confirmBtnText="Confirm"
-                  cancelBtnText="Cancel"
-                  customStyles={{
-                    dateIcon: {
-                      position: 'absolute',
-                      left: 0,
-                      top: 4,
-                      marginLeft: 0,
-                    },
-                    dateInput: {
-                      marginLeft: 36,
-                    },
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: "#00D49D",
+                    ...tw` justify-center items-center rounded-lg mx-5 h-10`,
                   }}
-                  onDateChange={handleDateChange}
-                />
+                  onPress={showMode}
+                >
+                  <Text style={tw`uppercase text-white text-base font-bold`}>
+                    {dateText}
+                  </Text>
+                </TouchableOpacity>
+                {show && (<DatePicker
+                    value={date}
+                    mode="date"
+                    format="YYYY-MM-DD"
+                    onChange={ChangeDate}
+                  />)}
               </View>
               <View style={tw`flex-row`}>
                 <View style={tw`pr-10`}>
-                  <Text style={tw`uppercase font-bold `} >height</Text>
-                  <TextInput style={tw`bg-transparent text-base mb-5 h-10`} keyboardType="numeric" onChangeText={(text) => handleInputChange('height', text)}></TextInput>
+                  <Text style={tw`uppercase font-bold `}>height</Text>
+                  <TextInput
+                    style={tw`bg-transparent text-base mb-5 h-10`}
+                    keyboardType="numeric"
+                    onChangeText={(text) => handleInputChange("height", text)}
+                  ></TextInput>
                 </View>
                 <View>
                   <Text style={tw`uppercase font-bold`}>weight</Text>
-                  <TextInput style={tw`bg-transparent text-base mb-5 h-10`} keyboardType="numeric" onChangeText={(text) => handleInputChange('weight', text)}></TextInput>
+                  <TextInput
+                    style={tw`bg-transparent text-base mb-5 h-10`}
+                    keyboardType="numeric"
+                    onChangeText={(text) => handleInputChange("weight", text)}
+                  ></TextInput>
                 </View>
               </View>
               <View>
                 <Text style={tw`uppercase font-bold`}>allergy</Text>
                 <View style={tw`flex-row`}>
-                  <TextInput style={tw`bg-transparent text-base mb-5 h-10 w-5/6`} onChangeText={(text) => setAllergyInput(text)} value={allergyInput}></TextInput>
-                  <FontAwesome style={tw`pl-5 `} name="plus-square" size={24} color="#00D49D" onPress={handleAddAllergy}/>
+                  <TextInput
+                    style={tw`bg-transparent text-base mb-5 h-10 w-5/6`}
+                    onChangeText={(text) => setAllergyInput(text)}
+                    value={allergyInput}
+                  ></TextInput>
+                  <FontAwesome
+                    style={tw`pl-5 `}
+                    name="plus-square"
+                    size={24}
+                    color="#00D49D"
+                    onPress={handleAddAllergy}
+                  />
                 </View>
               </View>
               <View>
                 {userData.allergy.map((allergy, index) => (
                   <Text key={index}>{allergy}</Text>
                 ))}
-
               </View>
               <View>
-              <TouchableOpacity style={{ backgroundColor: '#00D49D', ...tw` justify-center items-center rounded-lg mx-5 h-10` }} onPress={() => handleGenerate(userData)}>
-                <Text style={tw`uppercase text-white text-base font-bold`}>
-                  generate
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: "#00D49D",
+                    ...tw` justify-center items-center rounded-lg mx-5 h-10`,
+                  }}
+                  onPress={() => handleGenerate(userData)}
+                >
+                  <Text style={tw`uppercase text-white text-base font-bold`}>
+                    generate
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
         </ScrollView>
-      </View>
+      </ScrollView>
     </LinearGradient>
   );
 };
@@ -269,6 +343,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: "15%",
   },
 });
-
 
 export default InfoScreen;
