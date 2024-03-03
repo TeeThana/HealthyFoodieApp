@@ -36,4 +36,8 @@ Graduation Project. HealthyFoodie: Health Application with Artificial Intelligen
 in file android/app/src/main/res
 
 - create folder "values-th" and add file "strings.xml"
-  then copy this <?xml version="1.0" encoding="utf-8"?> and place at first line
+  then copy this ```<?xml version="1.0" encoding="utf-8"?>``` and place at first line
+
+# fix gradle problems
+
+in file android/gradle.properties change line "org.gradle..." to ```org.gradle.jvmargs=-Xmx1536m -Duser.country=US -Duser.language=en```

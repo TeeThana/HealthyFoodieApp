@@ -9,7 +9,7 @@ import {
 import { TextInput, Button, Text } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import tw from 'twrnc';
+import tw from "twrnc";
 
 //api
 import {
@@ -23,29 +23,27 @@ import {
 const windowWidth = Dimensions.get("window").width;
 const fontSize = windowWidth * 0.2;
 
-
-
 const SignInScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
 
   const handleSignIn = async (user, pass) => {
-    setPasswordError(false)
+    setPasswordError(false);
     try {
       const check = await UserAuth(user, pass);
       console.log(check.message);
       if (check.status === false) {
         if (check.message === "auth/invalid-email") {
-          setPasswordError(true)
+          setPasswordError(true);
         } else if (check.message === "auth/missing-password") {
-          setPasswordError(true)
+          setPasswordError(true);
         } else if (check.message === "auth/invalid-credential") {
-          setPasswordError(true)
+          setPasswordError(true);
         }
       } else {
         console.log("User sign in successful");
-        setPasswordError(false)
+        setPasswordError(false);
       }
     } catch (err) {
       console.error("SignIn failed", err.message);
@@ -143,7 +141,12 @@ const SignInScreen = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
         <View>
-        {passwordError && <Text style={tw`text-red-500 font-bold ml-15 mt-5`}> Invalid Username or Password </Text>}
+          {passwordError && (
+            <Text style={tw`text-red-500 font-bold ml-15 mt-5`}>
+              {" "}
+              Invalid Username or Password{" "}
+            </Text>
+          )}
         </View>
         <Button
           style={styles.signInButton}
