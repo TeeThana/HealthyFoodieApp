@@ -9,6 +9,7 @@ import DecreaseWeight from "../screens/DecreaseWeight";
 import ProgramScreen from "../screens/ProgramScreen";
 import AccountScreen from "../screens/AccountScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import InfoScreen from "../screens/InfoScreen";
 import RewardsScreen from "../screens/RewardsScreen";
 import MyRewardsScreen from "../screens/MyRewardsScreen";
 
@@ -41,6 +42,7 @@ const AccountStack = () => {
         <Account.Navigator initialRouteName="Account" screenOptions={{ headerShown: false }}>
             <Account.Screen name="Account" component={AccountScreen} />
             <Account.Screen name="Profile" component={ProfileScreen} />
+            <Account.Screen name="Information" component={InfoScreen} />
             <Account.Screen name="Rewards" component={RewardsScreen} />
             <Account.Screen name="MyRewards" component={MyRewardsScreen} />
         </Account.Navigator>

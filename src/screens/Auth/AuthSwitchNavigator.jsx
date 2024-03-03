@@ -10,7 +10,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 //Screens
 import CalendarScreen from "../CalendarScreen";
 import FriendsScreen from "../FriendsScreen";
-import InfoScreen from "../InfoScreen";
 import { AuthStack, HomeStack, AccountStack } from "../../routes/Stack";
 
 //Icons
@@ -100,7 +99,7 @@ const AppTap = () => {
       />
       <Tab.Screen
         name="Friends"
-        component={InfoScreen}
+        component={FriendsScreen}
         options={{
           tabBarIcon: ({ focused }) => {
             return (

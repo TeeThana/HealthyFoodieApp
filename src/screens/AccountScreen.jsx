@@ -10,6 +10,10 @@ const AccountScreen = ({navigation}) => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
+    const handleInformation = () => {
+        navigation.navigate("Information");
+      };
+
     const handleRewards = () => {
         navigation.navigate("Rewards");
       };
@@ -33,6 +37,10 @@ const AccountScreen = ({navigation}) => {
             <View style={tw`flex-1 `}>
                 <View style={tw`bg-white h-4/6 mt-auto`}>
                     <View style={tw`mt-4 justify-center items-center `}>
+                    <TouchableOpacity style={tw`p-5 w-full flex flex-row items-center justify-between`} onPress={handleInformation}>
+                        <Text style={tw`text-lg`}>Information</Text>
+                        <Ionicons name="chevron-forward" size={24} color="black" />
+                    </TouchableOpacity>
                     <TouchableOpacity style={tw`p-5 w-full flex flex-row items-center justify-between`} onPress={handleRewards}>
                         <Text style={tw`text-lg`}>Rewards</Text>
                         <Ionicons name="chevron-forward" size={24} color="black" />
@@ -41,6 +49,7 @@ const AccountScreen = ({navigation}) => {
                         <Text style={tw`text-lg`}>My Rewards</Text>
                         <Ionicons name="chevron-forward" size={24} color="black" />
                     </TouchableOpacity>
+                    
                     <TouchableOpacity style={tw`p-5 w-full flex flex-row items-center justify-between`} onPress={() => { setIsModalVisible(true) }}>
                         <Text style={tw`text-lg text-red-500 font-bold`}>Loguout</Text>
                     </TouchableOpacity>
