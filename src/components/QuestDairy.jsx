@@ -9,7 +9,7 @@ import {
 import tw from "twrnc";
 import * as Progress from "react-native-progress";
 import ProgressDairy from "../components/ProgressDairy";
-import { Gemini } from "../api/Gemini";
+import { Gemini, getData, getFirstDocName } from "../api/Gemini";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const QuestDairy = ({ weight }) => {
@@ -20,10 +20,17 @@ const QuestDairy = ({ weight }) => {
 
   useEffect(() => {
     const input = async () => {
+      const username = await AsyncStorage.getItem("username");
       const userData = await AsyncStorage.getItem("userInfo");
       const parsedUserData = JSON.parse(userData);
       setUserInfo(parsedUserData);
-      console.log("input from async storage: ", parsedUserData);
+      requestPlan(parsedUserData, username);
+      console.log(
+        "input from async storage: ",
+        parsedUserData,
+        "user:",
+        username
+      );
     };
     input();
   }, []);
@@ -32,22 +39,32 @@ const QuestDairy = ({ weight }) => {
     setChecked(!checked);
   };
 
-  const requestPlan = async () => {
+  const requestPlan = async (userInfo, username) => {
     setLoading(true);
     try {
-      const res = await Gemini(userInfo, weight);
-      console.log("quest: ", res.message);
-      setData(res.data);
+      let data = await getData(username);
+
+      if (data && data.status === "success" ) {
+        console.log("pull data success");
+        setData(data.data);
+      } else {
+        const res = await Gemini(userInfo, weight, username);
+        console.log("quest: ", res && res.status);
+
+        if (res && res.status === "success") {
+          data = await getData(username);
+          if (data && data.status === "success") {
+            console.log("pull data success");
+            setData(data.data);
+          }
+        }
+      }
     } catch (err) {
       console.error("quest res err: ", err);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    requestPlan();
-  }, []);
 
   console.log("data: ", data);
 
@@ -62,7 +79,7 @@ const QuestDairy = ({ weight }) => {
           {data &&
             Object.entries(data).map(
               ([key, value]) =>
-                key === "ตารางการรับประทานอาหาร" &&
+                key === "mealPlan" &&
                 value.map((item, index) => (
                   <View
                     key={index}

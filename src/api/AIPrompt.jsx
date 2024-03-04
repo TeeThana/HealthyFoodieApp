@@ -26,6 +26,7 @@ const pattern = {
       ระยะเวลา: "",
     },
   ],
+  ระยะเวลาที่แนะนำ: "สัปดาห์"
 };
 
 jsonString = JSON.stringify(pattern);
@@ -49,7 +50,7 @@ const continue_prompt = "ต่อ";
 
 const whoareyou = "ตอนนี้นายคือใคร";
 
-const all_prompt = `${clear} ${setup_prompt_1} ${setup_prompt_2} ${setup_prompt_3}`;
+const all_prompt = `${setup_prompt_1} ${setup_prompt_2} ${setup_prompt_3}`;
 
 export {
   setup_prompt_1,
