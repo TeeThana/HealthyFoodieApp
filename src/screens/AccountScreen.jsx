@@ -49,7 +49,10 @@ const AccountScreen = ({navigation}) => {
                         <Text style={tw`text-lg`}>My Rewards</Text>
                         <Ionicons name="chevron-forward" size={24} color="black" />
                     </TouchableOpacity>
-                    
+                    <TouchableOpacity style={tw`p-5 w-full flex flex-row items-center justify-between`} onPress={handleMyRewards}>
+                        <Text style={tw`text-lg`}>Map</Text>
+                        <Ionicons name="chevron-forward" size={24} color="black" />
+                    </TouchableOpacity>
                     <TouchableOpacity style={tw`p-5 w-full flex flex-row items-center justify-between`} onPress={() => { setIsModalVisible(true) }}>
                         <Text style={tw`text-lg text-red-500 font-bold`}>Loguout</Text>
                     </TouchableOpacity>

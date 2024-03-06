@@ -12,6 +12,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import InfoScreen from "../screens/InfoScreen";
 import RewardsScreen from "../screens/RewardsScreen";
 import MyRewardsScreen from "../screens/MyRewardsScreen";
+import GoogleMapsScreen from "../screens/GoogleMapsScreen";
 
 const Login = createStackNavigator();
 const Home = createStackNavigator();
@@ -45,6 +46,7 @@ const AccountStack = () => {
             <Account.Screen name="Information" component={InfoScreen} />
             <Account.Screen name="Rewards" component={RewardsScreen} />
             <Account.Screen name="MyRewards" component={MyRewardsScreen} />
+            <Account.Screen name="Maps" component={GoogleMapsScreen} />
         </Account.Navigator>
     );
   };

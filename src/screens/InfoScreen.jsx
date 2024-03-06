@@ -26,7 +26,7 @@ import {
 } from "../api/Authentication";
 
 //Firestore
-import { addDoc, collection, collectionGroup } from "firebase/firestore";
+import { doc, setDoc, addDoc, collection, collectionGroup } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 //icons
@@ -34,25 +34,25 @@ import { FontAwesome } from "@expo/vector-icons";
 
 const InfoScreen = ({ navigation }) => {
   const [userData, setUserData] = useState({
-    username: "",
     firstName: "",
     lastName: "",
-    age: "",
     gender: "",
     height: "",
     weight: "",
     allergy: [],
-    date: "",
+    dateOfBirth: new Date().toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }),
   });
+  
+  const [userName, setUserName] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       const username = await AsyncStorage.getItem("username");
-      setUserData((prevUserData) => ({
-        ...prevUserData,
-        username: username,
-      }));
-      console.log("User Data:", username, userData);
+      setUserName(username);
     };
 
     fetchUserData();
@@ -83,14 +83,20 @@ const InfoScreen = ({ navigation }) => {
     }
   };
 
+  const handleDeleteAllergy = (index) => {
+    const updatedUserData = { ...userData };
+    updatedUserData.allergy.splice(index, 1);
+    setUserData(updatedUserData);
+  };
+
   const handleGenerate = async (userData) => {
+    console.log("Username:", userName);
     console.log("Generate:", userData);
     try {
-      await addDoc(collection(db, "UserInfo"), {
-        username: userData.username,
+      await setDoc(doc(db, "UserInfo", 'Fluke' ), {
         firstName: userData.firstName,
         lastName: userData.lastName,
-        age: userData.age,
+        dateOfBirth: userData.dateOfBirth,
         gender: userData.gender,
         height: userData.height,
         weight: userData.weight,
@@ -103,12 +109,6 @@ const InfoScreen = ({ navigation }) => {
   };
 
   const [selectedGender, setSelectedGender] = useState(null);
-  // const [showGender, setShowGender] = useState(false);
-  // const [genderText, setGenderText] = useState("Gender");
-
-  // const showGenderOption = () => {
-  //   setShowGender(!showGender);
-  // }
 
   const handleGenderSelect = (gender) => {
     setSelectedGender(gender);
@@ -138,7 +138,7 @@ const InfoScreen = ({ navigation }) => {
     let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
     setUserData(prevUserData => ({
       ...prevUserData,
-      date: fDate,
+      dateOfBirth: fDate,
     }));
     setDateText(fDate)
     console.log(fDate);
@@ -268,9 +268,20 @@ const InfoScreen = ({ navigation }) => {
                 </View>
               </View>
               <View style={tw`m-5`}>
-                {userData.allergy.map((allergy, index) => (
-                  <Text style={tw`font-bold`} key={index}>- {allergy}</Text>
-                ))}
+                {userData.allergy && userData.allergy.length > 0 ? (
+                  userData.allergy.map((allergy, index) => (
+                    <View key={index} style={tw`flex-row items-center mb-2 w-15 justify-between`}>
+                    <Text style={tw`font-bold`} key={index}>- {allergy}</Text>
+                    <View style={tw``}>
+                      <TouchableOpacity style={tw`flex-col`} onPress={() => handleDeleteAllergy(index)}>
+                        <Text style={tw`text-white font-bold bg-red-500 px-2 rounded-md`}>-</Text>
+                      </TouchableOpacity>
+                    </View>
+                    </View>
+                  ))
+                ) : (
+                  <Text style={tw``}>No allergy</Text>
+                )}
               </View>
               <View>
                 <TouchableOpacity
@@ -281,7 +292,7 @@ const InfoScreen = ({ navigation }) => {
                   onPress={() => handleGenerate(userData)}
                 >
                   <Text style={tw`uppercase text-white text-base font-bold`}>
-                    generate
+                    Submit
                   </Text>
                 </TouchableOpacity>
               </View>
