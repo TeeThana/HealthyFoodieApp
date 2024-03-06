@@ -17,7 +17,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 //Firebase
-import { getDocs, collection, query, where } from "firebase/firestore";
+import {
+  doc, getDoc,
+  getDocs,
+  collection,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 const Tab = createBottomTabNavigator();
@@ -30,12 +36,12 @@ const screenOptions = {
   },
 };
 
-const AppTap = () => {
+const AppTap = ({ isPlan }) => {
   return (
     <Tab.Navigator screenOptions={screenOptions} initialRouteName="Home">
       <Tab.Screen
         name="Home"
-        component={HomeStack}
+        component={() => <HomeStack isPlan={isPlan} />}
         options={{
           tabBarIcon: ({ focused }) => {
             return (
@@ -168,6 +174,7 @@ const AppTap = () => {
 function AuthSwitchNavigator() {
   const [user, setUser] = useState(User || null);
   const [isInfo, setIsinfo] = useState(false);
+  const [isPlan, setIsplan] = useState(false);
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -176,6 +183,7 @@ function AuthSwitchNavigator() {
         setUser(user.email.split("@")[0]);
         await AsyncStorage.setItem("username", user.email.split("@")[0]);
         await fetchUserInfo(user.email.split("@")[0]);
+        await fetchPlan(user.email.split("@")[0]);
       } else {
         console.log("no user");
         setUser(null);
@@ -209,10 +217,26 @@ function AuthSwitchNavigator() {
     }
   };
 
+  const fetchPlan = async (username) => {
+    try {
+      const docRef = doc(db, "UserPlan", username);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        console.log("plan found");
+        setIsplan(true);
+      } else {
+        console.log("No user plan found");
+        setIsplan(false);
+      }
+    } catch (err) {
+      console.error("getDoc error: ", err);
+    }
+  };
+
   return (
     <NavigationContainer>
       {/* {user && isInfo ? <AppTap /> : user && !isInfo? <InfoScreen/> : <AuthStack />} */}
-      {user ? <AppTap /> : <AuthStack />}
+      {user ? <AppTap isPlan={isPlan} /> : <AuthStack />}
     </NavigationContainer>
   );
 }

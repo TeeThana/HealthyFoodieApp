@@ -107,7 +107,7 @@ export const Gemini = async (userInfo, weight, username) => {
           return { status: "fail" };
         }
       } else {
-        storeToDB(username, jsonResponse);
+        storeToDB(username, jsonResponse, weight);
         return { status: "success" };
       }
     } else {
@@ -147,7 +147,7 @@ function isEmptyJSON(jsonObject) {
   );
 }
 
-const storeToDB = async (username, jsonResponse) => {
+const storeToDB = async (username, jsonResponse, weight) => {
   console.log("json: ", typeof jsonResponse, ": ", jsonResponse);
   try {
     const currentDate = new Date()
@@ -175,7 +175,8 @@ const storeToDB = async (username, jsonResponse) => {
       }
       await setDoc(docRef, {
         timeRange: timeRange,
-      })
+        goal: weight,
+      });
       await setDoc(subDocRef, {
         mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
         exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],

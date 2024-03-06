@@ -26,14 +26,28 @@ const AuthStack = () => {
     );
   };
 
-const HomeStack = () => {
+const HomeStack = ({ isplan }) => {
     return (
-        <Home.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+      <Home.Navigator
+        initialRouteName="Home"
+        screenOptions={{ headerShown: false }}
+      >
+        {isplan ? (
+          <>
             <Home.Screen name="Home" component={HomeScreen} />
             <Home.Screen name="Increase" component={IncreaseWeight} />
             <Home.Screen name="Decrease" component={DecreaseWeight} />
             <Home.Screen name="Program" component={ProgramScreen} />
-        </Home.Navigator>
+          </>
+        ) : (
+          <>
+            {/* <Home.Screen name="Home" component={HomeScreen} />
+            <Home.Screen name="Increase" component={IncreaseWeight} />
+            <Home.Screen name="Decrease" component={DecreaseWeight} /> */}
+            <Home.Screen name="Program" component={ProgramScreen} />
+          </>
+        )}
+      </Home.Navigator>
     );
   };
 
