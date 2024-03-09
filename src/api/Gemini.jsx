@@ -85,33 +85,46 @@ export const Gemini = async (userInfo, weight, username) => {
   const retryCount = 5;
 
   try {
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts }],
-      generationConfig,
-      safetySettings,
-    });
-    let response = result.response.text();
-    response = response.replace(/นาที/g, "");
+    const currentDate = new Date()
+      .toLocaleDateString("en-GB")
+      .split("/")
+      .reverse()
+      .join("-");
 
-    console.log("model res: ", response);
+    const docRef = doc(db, "UserPlan", username, currentDate, "plan");
+    const docSnap = await getDoc(docRef);
 
-    if (isValidJSON(response)) {
-      const jsonResponse = JSON.parse(response, null, 2);
+    if (!docSnap.exists()) {
+      const result = await model.generateContent({
+        contents: [{ role: "user", parts }],
+        generationConfig,
+        safetySettings,
+      });
+      let response = result.response.text();
+      response = response.replace(/นาที/g, "");
 
-      if (isEmptyJSON(jsonResponse)) {
-        console.log("refresh...");
-        if (retryCount > 0) {
-          return await Gemini(userInfo, weight, username, retryCount - 1);
+      console.log("model res: ", response);
+
+      if (isValidJSON(response)) {
+        const jsonResponse = JSON.parse(response, null, 2);
+
+        if (isEmptyJSON(jsonResponse)) {
+          console.log("refresh...");
+          if (retryCount > 0) {
+            return await Gemini(userInfo, weight, username, retryCount - 1);
+          } else {
+            console.error("Retry limit exceeded");
+            return { status: "fail" };
+          }
         } else {
-          console.error("Retry limit exceeded");
-          return { status: "fail" };
+          await storeToDB(username, jsonResponse, weight, currentDate);
+          return { status: "success" };
         }
       } else {
-        storeToDB(username, jsonResponse, weight);
-        return { status: "success" };
+        console.error("Invalid JSON format:", response);
       }
     } else {
-      console.error("Invalid JSON format:", response);
+      return await getData(username, currentDate);
     }
   } catch (err) {
     console.error("model error: ", err);
@@ -147,36 +160,32 @@ function isEmptyJSON(jsonObject) {
   );
 }
 
-const storeToDB = async (username, jsonResponse, weight) => {
+const storeToDB = async (username, jsonResponse, weight, currentDate) => {
   console.log("json: ", typeof jsonResponse, ": ", jsonResponse);
   try {
-    const currentDate = new Date()
-      .toLocaleDateString("en-GB")
-      .split("/")
-      .reverse()
-      .join("-");
-    // const currentDate = "2024-03-06";
-
     const colRef = collection(db, "UserPlan");
     const docRef = doc(colRef, username);
-    const docSnap = await getDoc(docRef);
     const subColRef = collection(docRef, currentDate);
     const subDocRef = doc(subColRef, "plan");
 
-    if (!docSnap.exists()) {
-      let timeRange = jsonResponse["ระยะเวลาที่แนะนำ"];
-      if (
-        timeRange == "" ||
-        timeRange == "สัปดาห์" ||
-        timeRange == "ไม่ระบุ" ||
-        timeRange == "1 สัปดาห์"
-      ) {
-        timeRange = "3 สัปดาห์";
-      }
-      await setDoc(docRef, {
-        timeRange: timeRange,
-        goal: weight,
+    let timeRange = jsonResponse["ระยะเวลาที่แนะนำ"];
+    if (
+      timeRange == "" ||
+      timeRange == "สัปดาห์" ||
+      timeRange == "ไม่ระบุ" ||
+      timeRange == "1 สัปดาห์"
+    ) {
+      timeRange = "3 สัปดาห์";
+    }
+
+    const snapshot = await getDoc(subColRef);
+    if (snapshot.exists()) {
+      await setDoc(subDocRef, {
+        mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
+        exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],
       });
+    } else {
+      await setDoc(docRef, { timeRange: timeRange, goal: weight });
       await setDoc(subDocRef, {
         mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
         exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],
@@ -189,16 +198,12 @@ const storeToDB = async (username, jsonResponse, weight) => {
   }
 };
 
-export const getData = async (username) => {
+export const getData = async (username, currentDate) => {
+  console.log("Getting data: ", username, currentDate);
   try {
-    const currentDate = new Date()
-      .toLocaleDateString("en-GB")
-      .split("/")
-      .reverse()
-      .join("-");
-
     const docRef = doc(db, "UserPlan", username, currentDate, "plan");
     const docSnap = await getDoc(docRef);
+
     if (docSnap.exists()) {
       const data = docSnap.data();
       console.log("Document data:", data);
@@ -212,5 +217,3 @@ export const getData = async (username) => {
     return { status: "err", data: null };
   }
 };
-
-

@@ -37,11 +37,13 @@ const screenOptions = {
 };
 
 const AppTap = ({ isPlan }) => {
+  console.log("plan1: " + isPlan);
+  
   return (
     <Tab.Navigator screenOptions={screenOptions} initialRouteName="Home">
       <Tab.Screen
         name="Home"
-        component={() => <HomeStack isPlan={isPlan} />}
+        component={() => <HomeStack isPlan={isPlan}/>}
         options={{
           tabBarIcon: ({ focused }) => {
             return (
@@ -175,6 +177,7 @@ function AuthSwitchNavigator() {
   const [user, setUser] = useState(User || null);
   const [isInfo, setIsinfo] = useState(false);
   const [isPlan, setIsplan] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -192,6 +195,7 @@ function AuthSwitchNavigator() {
   }, []);
 
   const fetchUserInfo = async (username) => {
+  
     try {
       const res = await getDocs(
         query(collection(db, "UserInfo"), where("username", "==", username))
@@ -214,7 +218,7 @@ function AuthSwitchNavigator() {
       }
     } catch (err) {
       console.error("fetch data error: ", err.message);
-    }
+    } 
   };
 
   const fetchPlan = async (username) => {
@@ -236,7 +240,8 @@ function AuthSwitchNavigator() {
   return (
     <NavigationContainer>
       {/* {user && isInfo ? <AppTap /> : user && !isInfo? <InfoScreen/> : <AuthStack />} */}
-      {user ? <AppTap isPlan={isPlan} /> : <AuthStack />}
+      
+      {user ? <AppTap isPlan={isPlan}/> : <AuthStack />}
     </NavigationContainer>
   );
 }

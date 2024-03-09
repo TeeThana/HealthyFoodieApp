@@ -24,7 +24,7 @@ const QuestDairy = ({ weight }) => {
       const userData = await AsyncStorage.getItem("userInfo");
       const parsedUserData = JSON.parse(userData);
       setUserInfo(parsedUserData);
-      requestPlan(parsedUserData, username);
+      await requestPlan(parsedUserData, username);
       console.log(
         "input from async storage: ",
         parsedUserData,
@@ -42,9 +42,14 @@ const QuestDairy = ({ weight }) => {
   const requestPlan = async (userInfo, username) => {
     setLoading(true);
     try {
-      let data = await getData(username);
+      const currentDate = new Date()
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("-");
+      let data = await getData(username, currentDate);
 
-      if (data && data.status === "success" ) {
+      if (data && data.status === "success") {
         console.log("pull data success");
         setData(data.data);
       } else {
@@ -52,7 +57,7 @@ const QuestDairy = ({ weight }) => {
         console.log("quest: ", res && res.status);
 
         if (res && res.status === "success") {
-          data = await getData(username);
+          data = await getData(username, currentDate);
           if (data && data.status === "success") {
             console.log("pull data success");
             setData(data.data);
@@ -108,14 +113,14 @@ const QuestDairy = ({ weight }) => {
                   </View>
                 ))
             )}
-          {!data && (
+          {/* {!data && (
             <View
               style={tw`flex flex-row justify-center mx-3 mt-5 items-center`}
             >
               <ActivityIndicator />
               <Text>err</Text>
             </View>
-          )}
+          )} */}
         </>
       )}
     </>

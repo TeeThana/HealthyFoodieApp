@@ -14,7 +14,7 @@ import QuestDairy from "../components/QuestDairy";
 
 //api
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 const ProgramScreen = ({ navigation, route }) => {
@@ -27,13 +27,20 @@ const ProgramScreen = ({ navigation, route }) => {
       try {
         const username = await AsyncStorage.getItem("username");
         const docRef = doc(db, "UserPlan", username);
+        // console.log("route: ", weightGoal);
+        // await setDoc(docRef, {
+        //   goal: weightGoal,
+        // });
         const docSnap = await getDoc(docRef);
-        const data = docSnap.data();
-        const goal = data.goal;
-        if (!route.params) {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const goal = data && data.goal;
+          console.log(data);
+          console.log(goal);
           setWeight(goal);
         } else {
-          setWeight(route.params);
+          console.log("no doc:", route.params.weightGoal.toString());
+          setWeight(route.params.weightGoal.toString());
         }
       } catch (err) {
         console.error("getDoc error: ", err);
@@ -58,7 +65,7 @@ const ProgramScreen = ({ navigation, route }) => {
           <Text style={tw`font-bold text-2xl `}>Program</Text>
         </View>
         <View style={tw`items-center `}>
-          { !loading ? (
+          {!loading ? (
             <>
               <View style={tw`bg-gray-100 w-full h-full mt-20 items-center`}>
                 {weight && (

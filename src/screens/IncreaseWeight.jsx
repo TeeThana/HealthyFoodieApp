@@ -16,16 +16,16 @@ import Onboarding from "../components/Onboarding";
 import { signedOut } from "../api/Authentication";
 
 const IncreaseWeight = ({ navigation }) => {
-  const [weight, setWeight] = useState("");
+  const [weightGoal, setWeightGoal] = useState("");
 
   const handleWeightChange = (text) => {
-    setWeight(text);
+    setWeightGoal(text);
     navigation.navigate("Onboarding");
   };
 
   const handleSaveWeight = () => {
-    console.log("Weight:", weight);
-    navigation.navigate("Program", { weight: weight });
+    console.log("Weight:", weightGoal);
+    navigation.navigate("Program", { weightGoal: weightGoal });
   };
 
   const backHandler = () => {
@@ -57,7 +57,7 @@ const IncreaseWeight = ({ navigation }) => {
               style={styles.input}
               placeholder="Enter your weight"
               keyboardType="numeric"
-              value={weight}
+              value={weightGoal}
               onChangeText={handleWeightChange}
             />
             <TouchableOpacity
