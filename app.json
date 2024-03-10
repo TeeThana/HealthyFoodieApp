@@ -23,7 +23,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kilrios.healthyfoodie"
+      "package": "com.wanarak.n.healthyfoodie"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,7 +35,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "ca5806a7-0c3a-4753-9828-8f520d6d46cc"
+        "projectId": "447772d4-545a-4156-a322-e9ca0d71fb2c"
       }
     }
   }

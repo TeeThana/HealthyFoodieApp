@@ -1,4 +1,4 @@
-import React from "react";
+import React , {useEffect, useState}from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ActivityIndicator } from "react-native";
 //Screens
@@ -15,6 +15,9 @@ import RewardsScreen from "../screens/RewardsScreen";
 import MyRewardsScreen from "../screens/MyRewardsScreen";
 import GoogleMapsScreen from "../screens/GoogleMapsScreen";
 
+//Components
+import Loading from "../components/Loading";
+
 const Login = createStackNavigator();
 const Home = createStackNavigator();
 const Account = createStackNavigator();
@@ -28,25 +31,32 @@ const AuthStack = () => {
   );
 };
 
-const HomeStack = ({ isPlan }) => {
+const HomeStack = ({isPlan }) => {
   console.log("plan: ", isPlan);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <Home.Navigator
-      initialRouteName="Home"
+      initialRouteName={isPlan ? 'Program' : 'Home'}
       screenOptions={{ headerShown: false }}
     >
-      {isPlan ? (
-        <>
-          <Home.Screen name="Program" component={ProgramScreen} />
-        </>
-      ) : (
         <>
           <Home.Screen name="Home" component={HomeScreen} />
           <Home.Screen name="Increase" component={IncreaseWeight} />
           <Home.Screen name="Decrease" component={DecreaseWeight} />
           <Home.Screen name="Program" component={ProgramScreen} />
         </>
-      )}
     </Home.Navigator>
   );
 };

@@ -24,6 +24,10 @@ const AccountScreen = ({navigation}) => {
     
     const Logout = () => {
         signedOut()
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          })
     };
 
     return (

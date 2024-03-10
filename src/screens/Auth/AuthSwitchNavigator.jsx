@@ -4,8 +4,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
 import { NavigationContainer } from "@react-navigation/native";
-import { View, Text } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import tw from 'twrnc';
 
 //Screens
 import CalendarScreen from "../CalendarScreen";
@@ -36,14 +37,14 @@ const screenOptions = {
   },
 };
 
-const AppTap = ({ isPlan }) => {
+const AppTap = ({ isPlan, loading }) => {
   console.log("plan1: " + isPlan);
-  
+
   return (
     <Tab.Navigator screenOptions={screenOptions} initialRouteName="Home">
       <Tab.Screen
         name="Home"
-        component={() => <HomeStack isPlan={isPlan}/>}
+        component={() => <HomeStack isPlan={isPlan} loading={loading}/>}
         options={{
           tabBarIcon: ({ focused }) => {
             return (
@@ -177,7 +178,6 @@ function AuthSwitchNavigator() {
   const [user, setUser] = useState(User || null);
   const [isInfo, setIsinfo] = useState(false);
   const [isPlan, setIsplan] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -195,7 +195,7 @@ function AuthSwitchNavigator() {
   }, []);
 
   const fetchUserInfo = async (username) => {
-  
+
     try {
       const res = await getDocs(
         query(collection(db, "UserInfo"), where("username", "==", username))
@@ -218,7 +218,7 @@ function AuthSwitchNavigator() {
       }
     } catch (err) {
       console.error("fetch data error: ", err.message);
-    } 
+    }
   };
 
   const fetchPlan = async (username) => {
@@ -228,6 +228,7 @@ function AuthSwitchNavigator() {
       if (docSnap.exists()) {
         console.log("plan found");
         setIsplan(true);
+
       } else {
         console.log("No user plan found");
         setIsplan(false);
@@ -239,10 +240,9 @@ function AuthSwitchNavigator() {
 
   return (
     <NavigationContainer>
-      {/* {user && isInfo ? <AppTap /> : user && !isInfo? <InfoScreen/> : <AuthStack />} */}
-      
-      {user ? <AppTap isPlan={isPlan}/> : <AuthStack />}
+      {user ? <AppTap isPlan={isPlan}/>: <AuthStack />}
     </NavigationContainer>
+
   );
 }
 

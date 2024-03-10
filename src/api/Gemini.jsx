@@ -178,7 +178,7 @@ const storeToDB = async (username, jsonResponse, weight, currentDate) => {
       timeRange = "3 สัปดาห์";
     }
 
-    const snapshot = await getDoc(subColRef);
+    const snapshot = await getDoc(subDocRef);
     if (snapshot.exists()) {
       await setDoc(subDocRef, {
         mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
