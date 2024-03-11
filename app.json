@@ -16,14 +16,20 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kilrios.healthyfoodie"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.wanarak.n.healthyfoodie"
+      "package": "com.kilrios.healthyfoodie",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCNJgXSKjkQshhZQZFE0S491H-T9mRYb3Q"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,7 +41,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "447772d4-545a-4156-a322-e9ca0d71fb2c"
+        "projectId": "ca5806a7-0c3a-4753-9828-8f520d6d46cc"
       }
     }
   }

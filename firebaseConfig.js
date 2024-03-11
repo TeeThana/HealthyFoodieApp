@@ -27,6 +27,16 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+//Configuration: healthyfoodie (Default)
+// Keystore
+// Type                JKS
+// Key Alias           2ab2d5ca26390177e5dff659f28efced
+// MD5 Fingerprint     DD:22:1C:6D:F1:6C:E3:85:15:8A:A3:B3:B3:8E:97:0D
+// SHA1 Fingerprint    C4:C9:44:9D:77:54:A4:BF:35:DE:0E:0E:8F:1D:F1:82:D1:15:20:2F
+// SHA256 Fingerprint  2E:BA:B1:3F:DA:58:A9:64:92:64:92:C8:C0:10:AD:C5:AD:1E:1E:7A:67:64:46:BD:8C:7F:E2:24:4F:9B:F8:42
+// Updated             4 seconds ago
 
+
+//AIzaSyCWkeezDwH2NHGpNiQECyOABIyT9RgAnlg
 
 export { app, auth, db };

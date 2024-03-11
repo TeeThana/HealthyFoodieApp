@@ -81,9 +81,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace 'com.wanarak.n.healthyfoodie'
+    namespace 'com.kilrios.healthyfoodie'
     defaultConfig {
-        applicationId 'com.wanarak.n.healthyfoodie'
+        applicationId 'com.kilrios.healthyfoodie'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

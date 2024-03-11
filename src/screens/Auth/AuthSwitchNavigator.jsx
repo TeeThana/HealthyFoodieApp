@@ -26,6 +26,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
+import GoogleMapsScreen from "../GoogleMapsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -108,7 +109,7 @@ const AppTap = ({ isPlan, loading }) => {
       />
       <Tab.Screen
         name="Friends"
-        component={FriendsScreen}
+        component={GoogleMapsScreen}
         options={{
           tabBarIcon: ({ focused }) => {
             return (

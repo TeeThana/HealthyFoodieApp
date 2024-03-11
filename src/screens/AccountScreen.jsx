@@ -21,6 +21,10 @@ const AccountScreen = ({navigation}) => {
     const handleMyRewards = () => {
         navigation.navigate("MyRewards");
       };
+
+    const handleMaps = () => {
+      navigation.navigate("Maps");
+    };
     
     const Logout = () => {
         signedOut()
@@ -53,7 +57,7 @@ const AccountScreen = ({navigation}) => {
                         <Text style={tw`text-lg`}>My Rewards</Text>
                         <Ionicons name="chevron-forward" size={24} color="black" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={tw`p-5 w-full flex flex-row items-center justify-between`} onPress={handleMyRewards}>
+                    <TouchableOpacity style={tw`p-5 w-full flex flex-row items-center justify-between`} onPress={handleMaps}>
                         <Text style={tw`text-lg`}>Map</Text>
                         <Ionicons name="chevron-forward" size={24} color="black" />
                     </TouchableOpacity>

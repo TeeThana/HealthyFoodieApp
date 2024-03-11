@@ -41,7 +41,7 @@
     "react-native-calendars": "^1.1303.0",
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "~2.12.0",
-    "react-native-maps": "^1.10.3",
+    "react-native-maps": "1.7.1",
     "react-native-modal": "^13.0.1",
     "react-native-paper": "^5.12.1",
     "react-native-progress": "^5.0.1",
