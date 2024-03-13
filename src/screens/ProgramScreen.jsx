@@ -35,9 +35,13 @@ const ProgramScreen = ({ navigation, route }) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           const goal = data && data.goal;
-          console.log(data);
+          console.log(data.timeRange);
+          const modifiedTimeRange = data && data.timeRange ? data.timeRange.replace(/สัปดาห์/g, '').trim() : '';
+          const countDay = modifiedTimeRange ? parseInt(modifiedTimeRange, 10) * 7 : 0;
+          console.log(modifiedTimeRange);
           console.log(goal);
-          setWeight(goal);
+          setGoalDay(countDay)
+          setWeight("50");
         } else {
           console.log("no doc:", route.params.weightGoal.toString());
           setWeight(route.params.weightGoal.toString());
@@ -52,6 +56,7 @@ const ProgramScreen = ({ navigation, route }) => {
     fetchPlan();
   }, []);
 
+  const [goalDay, setGoalDay] = useState()
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <LinearGradient
@@ -68,16 +73,13 @@ const ProgramScreen = ({ navigation, route }) => {
           {!loading ? (
             <>
               <View style={tw`bg-gray-100 w-full h-full mt-20 items-center`}>
-                {weight && (
                   <View
                     style={tw`bg-white w-5/6 h-4/6 mt-20 shadow-md items-center`}
                   >
-                    <ProgressDairy weight={weight} />
-                    <QuestDairy weight={weight} />
+                    <QuestDairy/>
                   </View>
-                )}
               </View>
-              {weight && <ProgressBar weight={weight} />}
+              {weight && <ProgressBar weight={weight} goal={goalDay}/>}
             </>
           ) : (
             <View style={tw`bg-gray-100 w-full h-full mt-20 items-center`}>

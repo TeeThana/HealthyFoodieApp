@@ -12,11 +12,15 @@ import ProgressDairy from "../components/ProgressDairy";
 import { Gemini, getData, getFirstDocName } from "../api/Gemini";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const QuestDairy = ({ weight }) => {
-  const [checked, setChecked] = useState(false);
+
+const QuestDairy = () => {
+  const [checked, setChecked] = useState([]);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
+  const [progress, setProgress] = useState(0)
+  const [countData, setCountData] = useState(1);
+  console.log("Count", countData);
 
   useEffect(() => {
     const input = async () => {
@@ -35,8 +39,14 @@ const QuestDairy = ({ weight }) => {
     input();
   }, []);
 
-  const handleChecked = () => {
-    setChecked(!checked);
+  const handleChecked = (index) => {
+    console.log(index)
+    setChecked((prevChecked) => {
+      const updatedChecked = [...prevChecked];
+      updatedChecked[index] = !updatedChecked[index];
+      return updatedChecked;
+    });
+    setProgress((prevProgress) => prevProgress + 1);
   };
 
   const requestPlan = async (userInfo, username) => {
@@ -52,6 +62,12 @@ const QuestDairy = ({ weight }) => {
       if (data && data.status === "success") {
         console.log("pull data success");
         setData(data.data);
+        const [mealPlanData, exercisePlanData] = await Promise.all([
+          data.data.mealPlan,
+          data.data.exercisePlan
+        ]);
+        const countIndex = mealPlanData.length + exercisePlanData.length;
+        setCountData(countIndex)
       } else {
         const res = await Gemini(userInfo, weight, username);
         console.log("quest: ", res && res.status);
@@ -81,38 +97,50 @@ const QuestDairy = ({ weight }) => {
         </View>
       ) : (
         <>
+          <ProgressDairy progress={progress} countDiary={countData}/>
           {data &&
-            Object.entries(data).map(
-              ([key, value]) =>
-                key === "mealPlan" &&
-                value.map((item, index) => (
-                  <View
-                    key={index}
-                    style={tw`items-baseline bg-white w-5/6 h-20 mt-5 rounded-lg shadow-md flex flex-row justify-between`}
-                  >
-                    <ScrollView contentContainerStyle={tw`w-full p-5`}>
-                      <Text style={tw`text-black font-bold `}>{item.มื้อ}</Text>
-                      <Text style={tw`text-black font-bold `}>{item.เมนู}</Text>
-                      <Text style={tw`text-black font-bold `}>
-                        {item.แคลอรี่}
-                      </Text>
-                    </ScrollView>
-                    <TouchableOpacity
-                      style={[
-                        tw`p-3 rounded-md`,
-                        { backgroundColor: checked ? "#D9D9D9" : "#00D49D" },
-                      ]}
-                      onPress={() => {
-                        handleChecked();
-                      }}
+            Object.entries(data).map(([key, value]) => {
+              if (key === "exercisePlan" || key === "mealPlan") {
+                return value.map((item, index) => {
+                  if (key === "exercisePlan") {
+                    index += 3;
+                  }
+                  return (
+                    <View
+                      key={index}
+                      style={tw`items-baseline bg-white w-5/6 h-20 mt-5 rounded-lg shadow-md flex flex-row justify-between items-center px-4`}
                     >
-                      <Text style={tw`text-white font-bold `}>
-                        {checked ? "Checked" : "Check"}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                ))
-            )}
+                      <View style={tw`w-3/5`}>
+                        <Text style={tw`text-black font-bold `}>{item.มื้อ || item.ประเภท}</Text>
+                        <Text style={tw`text-black font-bold `}>{item.เมนู || item.ระยะเวลา}</Text>
+                        <Text style={tw`text-black font-bold `}>{item.แคลอรี่ || item.วัน}</Text>
+                      </View>
+                      <TouchableOpacity
+                        style={[
+                          tw`p-3 rounded-md`,
+                          { backgroundColor: checked[index] ? "#D9D9D9" : "#00D49D" },
+                        ]}
+                        onPress={() => {
+                          handleChecked(index);
+                        }}
+                        disabled={checked[index]}
+                      >
+                        <Text style={tw`text-white font-bold `}>
+                          {checked[index] ? "Checked" : "Check"}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                });
+              }
+              return (
+              <View>
+                <Text>
+                  No Info
+                </Text>
+              </View>
+              )
+            })}
           {/* {!data && (
             <View
               style={tw`flex flex-row justify-center mx-3 mt-5 items-center`}

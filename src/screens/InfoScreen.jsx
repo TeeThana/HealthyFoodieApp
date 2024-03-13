@@ -8,6 +8,7 @@ import {
   ScrollView,
   Pressable,
   Platform,
+  ActivityIndicator
 } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
@@ -16,6 +17,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import DatePicker from "@react-native-community/datetimepicker";
 import tw from "twrnc";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import moment from "moment";
 
 //api
 import {
@@ -26,7 +28,7 @@ import {
 } from "../api/Authentication";
 
 //Firestore
-import { doc, setDoc, addDoc, collection, collectionGroup } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 //icons
@@ -40,27 +42,47 @@ const InfoScreen = ({ navigation }) => {
     height: "",
     weight: "",
     allergy: [],
-    dateOfBirth: new Date().toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }),
+    dateOfBirth:"",
+    fullDate: "",
   });
-  
+  const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
       const username = await AsyncStorage.getItem("username");
       setUserName(username);
+      try {
+        const documentRef = doc(db, 'UserInfo', username);
+        const documentSnapshot = await getDoc(documentRef);
+        if (documentSnapshot.exists()) {
+          console.log(documentSnapshot.data());
+          const data = documentSnapshot.data();
+          setUserData(prevData => ({
+            ...prevData,
+            ...data,
+          }));
+          setDate(new Date(data.fullDate))
+          setDateText(data.dateOfBirth);
+        } else {
+          console.log('Document does not exist!');
+        }
+      } catch (error) {
+        console.error('Error fetching document:', error);
+      }
     };
-
     fetchUserData();
   }, []);
 
   useEffect(() => { }, [userData]);
-
+  
   const handleInputChange = (inputName, text) => {
+    if (text !== userData.inputName) {
+      setHasChanges(true);
+    } else {
+      setHasChanges(false);
+    }
     setUserData((prevInputValues) => ({
       ...prevInputValues,
       [inputName]: text,
@@ -92,11 +114,13 @@ const InfoScreen = ({ navigation }) => {
   const handleGenerate = async (userData) => {
     console.log("Username:", userName);
     console.log("Generate:", userData);
+    setLoading(true);
     try {
       await setDoc(doc(db, "UserInfo", userName), {
         firstName: userData.firstName,
         lastName: userData.lastName,
         dateOfBirth: userData.dateOfBirth,
+        fullDate: userData.fullDate,
         gender: userData.gender,
         height: userData.height,
         weight: userData.weight,
@@ -105,12 +129,20 @@ const InfoScreen = ({ navigation }) => {
       console.log("Added Info Successfully");
     } catch (err) {
       console.error("Generate Error!", err.message);
+    } finally {
+      setLoading(false);
+      setHasChanges(false);
     }
   };
 
   const [selectedGender, setSelectedGender] = useState(null);
 
   const handleGenderSelect = (gender) => {
+    if (gender !== userData.gender) {
+      setHasChanges(true);
+    } else {
+      setHasChanges(false);
+    }
     setSelectedGender(gender);
     setUserData((prevUserData) => ({
       ...prevUserData,
@@ -121,23 +153,26 @@ const InfoScreen = ({ navigation }) => {
   const [date, setDate] = useState(new Date());
   // const [selectedDate, setSelectedDate] = useState();
   const [showDate, setShowDate] = useState(false);
-  const [dateText, setDateText] = useState(
-    new Date().toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-  );
+  const [dateText, setDateText] = useState('DD/MM/YYYY');
 
 
   const ChangeDate = (event, selectedDate) => {
+    if (selectedDate !== userData.fullDate) {
+      setHasChanges(true);
+    } else {
+      setHasChanges(false);
+    }
+    console.log("Selected", selectedDate);
     const currentDate = selectedDate || date;
     setShowDate(Platform.OS === 'ios');
     setDate(currentDate)
+    console.log("Current", currentDate);
     let tempDate = new Date(currentDate)
-    let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+    let fDate = moment(tempDate).format('DD/MM/YYYY');
+    console.log("fDate",fDate)
     setUserData(prevUserData => ({
       ...prevUserData,
+      fullDate: tempDate.toString(),
       dateOfBirth: fDate,
     }));
     setDateText(fDate)
@@ -148,6 +183,8 @@ const InfoScreen = ({ navigation }) => {
   const showMode = () => {
     setShowDate(true);
   }
+
+  console.log("Log", userData);
 
   return (
     <LinearGradient
@@ -187,11 +224,13 @@ const InfoScreen = ({ navigation }) => {
               <TextInput
                 style={tw`bg-transparent text-base mb-5 h-10`}
                 onChangeText={(text) => handleInputChange("firstName", text)}
+                value={userData.firstName}
               ></TextInput>
               <Text style={tw`uppercase font-bold`}>lastname</Text>
               <TextInput
                 style={tw`bg-transparent text-base mb-5 h-10`}
                 onChangeText={(text) => handleInputChange("lastName", text)}
+                value={userData.lastName}
               ></TextInput>
               <View style={tw`mt-2 mb-5`}>
                 <Text style={tw`uppercase font-bold mb-3`}>gender</Text>
@@ -200,11 +239,11 @@ const InfoScreen = ({ navigation }) => {
                     ...tw` rounded-lg h-10 justify-center w-1/2`,
                   }}>
                   <Picker
-                      
                       selectedValue={selectedGender}
                       onValueChange={(itemValue, itemIndex) =>
                         handleGenderSelect(itemValue)
                       }
+                      value={userData.gender}
                     >
                       <Picker.Item label="Male" value="male" />
                       <Picker.Item label="Female" value="female" />
@@ -228,7 +267,7 @@ const InfoScreen = ({ navigation }) => {
                 {showDate && (<DatePicker
                     value={date}
                     mode="date"
-                    format="YYYY-MM-DD"
+                    format="DD/MM/YYYY"
                     onChange={ChangeDate}
                   />)}
               </View>
@@ -239,6 +278,7 @@ const InfoScreen = ({ navigation }) => {
                     style={tw`bg-transparent text-base mb-5 h-10`}
                     keyboardType="numeric"
                     onChangeText={(text) => handleInputChange("height", text)}
+                    value={userData.height}
                   ></TextInput>
                 </View>
                 <View>
@@ -247,6 +287,7 @@ const InfoScreen = ({ navigation }) => {
                     style={tw`bg-transparent text-base mb-5 h-10`}
                     keyboardType="numeric"
                     onChangeText={(text) => handleInputChange("weight", text)}
+                    value={userData.weight}
                   ></TextInput>
                 </View>
               </View>
@@ -256,7 +297,7 @@ const InfoScreen = ({ navigation }) => {
                   <TextInput
                     style={tw`bg-transparent text-base h-10 w-5/6`}
                     onChangeText={(text) => setAllergyInput(text)}
-                    value={allergyInput}
+                    value={allergyInput || userData.allergy}
                   ></TextInput>
                   <FontAwesome
                     style={tw`pl-5 `}
@@ -286,14 +327,19 @@ const InfoScreen = ({ navigation }) => {
               <View>
                 <TouchableOpacity
                   style={{
-                    backgroundColor: "#00D49D",
+                    backgroundColor: hasChanges ? "#00D49D" : "#A9A9A9",
                     ...tw` justify-center items-center rounded-lg mx-5 h-10`,
                   }}
                   onPress={() => handleGenerate(userData)}
+                  disabled={loading || !hasChanges}
                 >
-                  <Text style={tw`uppercase text-white text-base font-bold`}>
-                    Submit
-                  </Text>
+                  {loading ? (
+                    <ActivityIndicator size="small" color="#ffffff" />
+                  ) : (
+                    <Text style={{ textTransform: 'uppercase', color: 'white', fontWeight: 'bold' }}>
+                      Submit
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </View>
             </View>

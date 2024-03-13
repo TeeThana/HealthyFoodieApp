@@ -5,9 +5,8 @@ import * as Progress from "react-native-progress";
 // import { RecommendDays } from "../api/Gemini";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ProgressBar = ({ weight }) => {
+const ProgressBar = ({ weight, goal }) => {
   const [percent, setPercent] = useState(weight);
-  const [goal, setGoal] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
 
 //   useEffect(() => {
@@ -35,7 +34,7 @@ const ProgressBar = ({ weight }) => {
     <View style={tw`absolute bg-white w-5/6 h-30 rounded-lg shadow-md`}>
       <View style={tw`flex flex-row mt-5 justify-between px-5`}>
         <Text style={tw`text-black font-bold`}>Day 1</Text>
-        <Text style={tw`text-black font-bold`}>Day 30</Text>
+        <Text style={tw`text-black font-bold`}>Day {goal}</Text>
       </View>
       <View style={tw`mt-5 items-center`}>
         <Progress.Bar

@@ -1,20 +1,26 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, TextInput} from 'react-native';
 import tw from 'twrnc';
 import * as Progress from 'react-native-progress';
 
-const ProgressDairy = ({weight}) => {
-    const [percent, setPercent] = useState(weight);
+const ProgressDairy = ({progress, countDiary}) => {
+    console.log("Progress", typeof progress);
+    console.log("Diary", typeof countDiary);
+    const [percent, setPercent] = useState(0);
+    console.log(percent);
 
-    const handleWeightChange = (percent) => {
-        setPercent(percent);
-    };
+    useEffect(() => {
+        if (progress !== undefined && countDiary !== undefined) {
+          const multipliedProgress = (progress/countDiary)*100;
+          setPercent(multipliedProgress);
+        }
+      }, [progress]);
 
     return (
     <View style={tw`bg-white w-5/6 h-20 mt-5 rounded-lg shadow-md`}>
         <View style={tw`items-center`}>
             <Text style={tw`uppercase text-black font-bold mt-5`}>
-                dairy
+                diary
             </Text>
         </View>
         <View style={tw`mt-5 items-center`}> 
