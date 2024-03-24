@@ -78,7 +78,7 @@ const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 export const Gemini = async (userInfo, weight, username) => {
   const parts = [
     {
-      text: `${all_prompt} เคสที่ให้ช่วย ${userInfo} น้ำหนักเป้าหมาย ${weight}`,
+      text: `${all_prompt} เคสที่ให้ช่วย ${userInfo} น้ำหนักเป้าหมาย ${weight} เช็ค allergy ให้ดีๆ เพราะผู้ใช้อาจเป็นอันตรายได้`,
     },
   ];
 
@@ -91,7 +91,7 @@ export const Gemini = async (userInfo, weight, username) => {
       .reverse()
       .join("-");
 
-    const docRef = doc(db, "UserPlan", username, currentDate, "plan");
+    const docRef = doc(db, "UserPlan", username, "plan", currentDate);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
@@ -103,7 +103,7 @@ export const Gemini = async (userInfo, weight, username) => {
       let response = result.response.text();
       response = response.replace(/นาที/g, "");
 
-      console.log("model res: ", response);
+      // console.log("model res: ", response);
 
       if (isValidJSON(response)) {
         const jsonResponse = JSON.parse(response, null, 2);
@@ -117,8 +117,25 @@ export const Gemini = async (userInfo, weight, username) => {
             return { status: "fail" };
           }
         } else {
-          await storeToDB(username, jsonResponse, weight, currentDate);
-          return { status: "success" };
+          if (
+            jsonResponse !=
+            {
+              ตารางการรับประทานอาหาร: [],
+              ตารางการออกกำลังกาย: [],
+              ระยะเวลาที่แนะนำ: "",
+            }
+          ) {
+            await storeToDB(username, jsonResponse, weight, currentDate);
+            return { status: "success" };
+          } else {
+            if (retryCount > 0) {
+              console.log("refresh...");
+              return await Gemini(userInfo, weight, username, retryCount - 1);
+            } else {
+              console.error("Retry limit exceeded");
+              return { status: "fail" };
+            }
+          }
         }
       } else {
         console.error("Invalid JSON format:", response);
@@ -161,12 +178,13 @@ function isEmptyJSON(jsonObject) {
 }
 
 const storeToDB = async (username, jsonResponse, weight, currentDate) => {
-  console.log("json: ", typeof jsonResponse, ": ", jsonResponse);
+  // console.log("json: ", typeof jsonResponse, ": ", jsonResponse);
+  // console.log("goal: ", weight);
   try {
     const colRef = collection(db, "UserPlan");
     const docRef = doc(colRef, username);
-    const subColRef = collection(docRef, currentDate);
-    const subDocRef = doc(subColRef, "plan");
+    const subColRef = collection(docRef, "plan");
+    const subDocRef = doc(subColRef, currentDate);
 
     let timeRange = jsonResponse["ระยะเวลาที่แนะนำ"];
     if (
@@ -185,7 +203,16 @@ const storeToDB = async (username, jsonResponse, weight, currentDate) => {
         exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],
       });
     } else {
-      await setDoc(docRef, { timeRange: timeRange, goal: weight });
+      const check = await getDoc(docRef);
+
+      if (!check.exists()) {
+        await setDoc(docRef, {
+          timeRange: timeRange,
+          goal: weight,
+          start: currentDate,
+        });
+      }
+
       await setDoc(subDocRef, {
         mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
         exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],
@@ -201,7 +228,7 @@ const storeToDB = async (username, jsonResponse, weight, currentDate) => {
 export const getData = async (username, currentDate) => {
   console.log("Getting data: ", username, currentDate);
   try {
-    const docRef = doc(db, "UserPlan", username, currentDate, "plan");
+    const docRef = doc(db, "UserPlan", username, "plan", currentDate);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {

@@ -52,6 +52,7 @@ export const UserAuth = async (user, pass) => {
 
 export const signedOut = async () => {
   try {
+    await AsyncStorage.clear();
     await signOut(auth);
     console.log("User signed out!");
     return true; 

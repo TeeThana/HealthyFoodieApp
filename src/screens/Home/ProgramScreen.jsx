@@ -49,7 +49,7 @@ const ProgramScreen = ({ navigation, route }) => {
           console.log(modifiedTimeRange);
           console.log(goal);
           setGoalDay(countDay);
-          setWeight("50");
+          setWeight(goal);
         } else {
           console.log("no doc:", route.params.weightGoal.toString());
           setWeight(route.params.weightGoal.toString());
@@ -85,7 +85,7 @@ const ProgramScreen = ({ navigation, route }) => {
                 <View
                   style={tw`bg-white w-5/6 h-4/6 mt-20 shadow-md items-center`}
                 >
-                  <QuestDairy />
+                  <QuestDairy navigation={navigation} weight={weight}/>
                 </View>
               </View>
               {weight && <ProgressBar weight={weight} goal={goalDay} />}

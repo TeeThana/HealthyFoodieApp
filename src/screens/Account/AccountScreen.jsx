@@ -29,9 +29,9 @@ const AccountScreen = ({ navigation }) => {
     navigation.navigate("MyRewards");
   };
 
-  const handleMaps = () => {
-    navigation.navigate("Maps");
-  };
+  // const handleMaps = () => {
+  //   navigation.navigate("Maps");
+  // };
 
   const Logout = () => {
     signedOut();
@@ -79,7 +79,7 @@ const AccountScreen = ({ navigation }) => {
               </Text>
               <Ionicons name="chevron-forward" size={24} color="black" />
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={tw`p-5 w-full flex flex-row items-center justify-between`}
               onPress={handleMaps}
             >
@@ -87,7 +87,7 @@ const AccountScreen = ({ navigation }) => {
                 Map
               </Text>
               <Ionicons name="chevron-forward" size={24} color="black" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               style={tw`p-5 w-full flex flex-row items-center justify-between`}
               onPress={() => {

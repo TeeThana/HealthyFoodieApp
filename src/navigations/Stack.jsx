@@ -56,6 +56,7 @@ export const HomeStack = ({ isPlan }) => {
         <Home.Screen name="Increase" component={IncreaseWeight} />
         <Home.Screen name="Decrease" component={DecreaseWeight} />
         <Home.Screen name="Program" component={ProgramScreen} />
+        <Account.Screen name="Maps" component={MapScreen} />
       </>
     </Home.Navigator>
   );
@@ -72,7 +73,7 @@ export const AccountStack = () => {
       <Account.Screen name="Information" component={InfoScreen} />
       {/* <Account.Screen name="Rewards" component={RewardsScreen} /> */}
       {/* <Account.Screen name="MyRewards" component={MyRewardsScreen} /> */}
-      <Account.Screen name="Maps" component={MapScreen} />
+      {/* <Account.Screen name="Maps" component={MapScreen} /> */}
     </Account.Navigator>
   );
 };
