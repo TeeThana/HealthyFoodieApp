@@ -58,7 +58,7 @@ const InfoScreen = ({ navigation }) => {
         const documentRef = doc(db, "UserInfo", username);
         const documentSnapshot = await getDoc(documentRef);
         if (documentSnapshot.exists()) {
-          console.log(documentSnapshot.data());
+          // console.log(documentSnapshot.data());
           const data = documentSnapshot.data();
           setUserData((prevData) => ({
             ...prevData,
@@ -109,8 +109,8 @@ const InfoScreen = ({ navigation }) => {
   };
 
   const handleGenerate = async (userData) => {
-    console.log("Username:", userName);
-    console.log("Generate:", userData);
+    // console.log("Username:", userName);
+    // console.log("Generate:", userData);
     setLoading(true);
     try {
       await setDoc(doc(db, "UserInfo", userName), {
@@ -158,29 +158,29 @@ const InfoScreen = ({ navigation }) => {
     } else {
       setHasChanges(false);
     }
-    console.log("Selected", selectedDate);
+    // console.log("Selected", selectedDate);
     const currentDate = selectedDate || date;
     setShowDate(Platform.OS === "ios");
     setDate(currentDate);
-    console.log("Current", currentDate);
+    // console.log("Current", currentDate);
     let tempDate = new Date(currentDate);
     let fDate = moment(tempDate).format("DD/MM/YYYY");
-    console.log("fDate", fDate);
+    // console.log("fDate", fDate);
     setUserData((prevUserData) => ({
       ...prevUserData,
       fullDate: tempDate.toString(),
       dateOfBirth: fDate,
     }));
     setDateText(fDate);
-    console.log(fDate);
-    console.log(userData);
+    // console.log(fDate);
+    // console.log(userData);
   };
 
   const showMode = () => {
     setShowDate(true);
   };
 
-  console.log("Log", userData);
+  // console.log("Log", userData);
 
   return (
     <LinearGradient

@@ -3,7 +3,7 @@ import { View, Text, TextInput } from "react-native";
 import tw from "twrnc";
 import * as Progress from "react-native-progress";
 
-const ProgressDairy = ({ progress, countDiary }) => {;
+const ProgressDairy = ({ progress, countDiary }) => {
   const [percent, setPercent] = useState(0);
 
   useEffect(() => {

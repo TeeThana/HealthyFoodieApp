@@ -25,7 +25,6 @@ const screenOptions = {
 };
 
 export const AppTab = ({ isPlan }) => {
-  console.log("plan1: " + isPlan);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

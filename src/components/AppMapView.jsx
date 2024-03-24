@@ -20,7 +20,7 @@ const AppMapView = ({placeList}) => {
             showsUserLocation={true}
             style={tw`w-full h-full`}
             customMapStyle={MapViewStyle}
-            minZoomLevel={15}
+            minZoomLevel={13}
             region={{
               latitude: location?.coords.latitude,
               longitude: location?.coords.longitude,

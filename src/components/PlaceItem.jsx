@@ -18,7 +18,7 @@ const PlaceItem = ({ place }) => {
                 style={tw`w-full h-50 rounded-lg z-10`} />
             <View style={tw`p-5`}>
                 <Text style={tw`font-bold text-base mb-2`}>{place.name}</Text>
-                <Text style={tw`text-md text-gray-500`}>{place?.formatted_address}</Text>
+                <Text style={tw`text-sm text-gray-500`}>{place?.formatted_address}</Text>
             </View>
             {/* <FontAwesome 
                 name="location-arrow" 

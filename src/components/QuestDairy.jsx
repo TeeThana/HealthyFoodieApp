@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
-  FlatList
+  FlatList,
 } from "react-native";
 import tw from "twrnc";
 import * as Progress from "react-native-progress";
@@ -16,10 +16,13 @@ import ProgressDairy from "../components/ProgressDairy";
 
 //Api
 import { Gemini, getData, getFirstDocName } from "../api/Gemini";
+import { getDoc, updateDoc, doc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 //Icons
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+
 
 
 const QuestDairy = ({navigation,  weight }) => {
@@ -29,7 +32,7 @@ const QuestDairy = ({navigation,  weight }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [progress, setProgress] = useState(0);
   const [countData, setCountData] = useState(1);
-  console.log("Count", countData);
+
 
   useEffect(() => {
     const input = async () => {
@@ -38,12 +41,12 @@ const QuestDairy = ({navigation,  weight }) => {
       const parsedUserData = JSON.parse(userData);
       setUserInfo(parsedUserData);
       await requestPlan(parsedUserData, username);
-      console.log(
-        "input from async storage: ",
-        parsedUserData,
-        "user:",
-        username
-      );
+      // console.log(
+      //   "input from async storage: ",
+      //   parsedUserData,
+      //   "user:",
+      //   username
+      // );
     };
     input();
   }, []);
@@ -52,8 +55,43 @@ const QuestDairy = ({navigation,  weight }) => {
     navigation.navigate("Maps", { menu: menu });
   };
 
-   const handleChecked = (index) => {
-    //  console.log(index);
+   const handleChecked = async (key, index) => {
+    const username = await AsyncStorage.getItem("username");
+     console.log(key, index);
+    const currentDate = new Date()
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .reverse()
+        .join("-");
+    try {
+      const userPlanDocRef = doc(db, "UserPlan", username, "plan", currentDate);
+      const userPlanDocSnap = await getDoc(userPlanDocRef);
+        if (userPlanDocSnap.exists()) {
+            // อ่านข้อมูล userPlan จาก Firestore
+            const userPlanData = userPlanDocSnap.data();
+
+            // ตรวจสอบว่า key เป็น "exercisePlan" หรือไม่
+            if (key === "exercisePlan") {
+                // คำนวณอินเด็กซ์ใหม่โดยลบ 3 ออกจากอินเด็กซ์ที่ได้รับ
+                const newIndex = index - 3;
+
+                // อัปเดตเอกสารในอาร์เรย์โดยใช้ตำแหน่งใหม่
+                userPlanData.exercisePlan[newIndex] = {checked: true}; // แทนที่ updatedData ด้วยข้อมูลที่ต้องการอัปเดต
+            }else if( key === "mealPlan") {
+                userPlanData.mealPlan[index] = {checked: true};
+            }
+
+            // อัปเดตเอกสารใน Firestore
+            await updateDoc(userPlanDocRef, userPlanData);
+            console.log("Document successfully updated!");
+        } else {
+            console.log("No such document!");
+        }
+      console.log(data)
+    }catch (err) {
+      console.error("quest res err: ", err);
+    }
+
      setChecked((prevChecked) => {
        const updatedChecked = [...prevChecked];
        updatedChecked[index] = !updatedChecked[index];
@@ -73,7 +111,7 @@ const QuestDairy = ({navigation,  weight }) => {
       let data = await getData(username, currentDate);
 
       if (data && data.status === "success") {
-        console.log("pull data success");
+        // console.log("pull data success");
         setData(data.data);
         console.log("MealPlan", data.data.mealPlan);
         const [mealPlanData, exercisePlanData] = await Promise.all([
@@ -84,7 +122,6 @@ const QuestDairy = ({navigation,  weight }) => {
         const countIndex = mealPlanData.length + exercisePlanData.length;
         console.log("Index", countIndex)
         setCountData(countIndex);
-
       } else {
         const res = await Gemini(userInfo, weight, username);
         // console.log("quest: ", res && res.status);
@@ -92,7 +129,7 @@ const QuestDairy = ({navigation,  weight }) => {
         if (res && res.status === "success") {
           data = await getData(username, currentDate);
           if (data && data.status === "success") {
-            console.log("pull data success");
+            // console.log("pull data success");
             setData(data.data);
           }
         }
@@ -117,12 +154,15 @@ const QuestDairy = ({navigation,  weight }) => {
             Object.entries(data).map(([key, value]) => {
               if (key === "exercisePlan" || key === "mealPlan") {
                 return value.map((item, index) => {
-                  if (key === "exercisePlan" && value.length !== 0) {
+                  // if (key === "exercisePlan" && value.length !== 0) {
+                  // สร้าง key ที่ไม่ซ้ำกันโดยใช้ key และ index
+                  const uniqueKey = `${key}-${index}`;
+                  if (key === "exercisePlan") {
                     index += 3;
                   }
                   return (
                     <View
-                      key={index}
+                      key={uniqueKey}
                       style={tw`items-baseline bg-white w-5/6 h-20 mt-5 rounded-lg shadow-md flex flex-row justify-between items-center px-4`}
                     >
                       <View style={tw`w-3/5`}>
@@ -155,7 +195,7 @@ const QuestDairy = ({navigation,  weight }) => {
                           },
                         ]}
                         onPress={() => {
-                          handleChecked(index);
+                          handleChecked(key, index);
                         }}
                         disabled={checked[index]}
                       >
@@ -165,13 +205,9 @@ const QuestDairy = ({navigation,  weight }) => {
                       </TouchableOpacity>
                     </View>
                   );
-                });
+              // }
+              });
               }
-              return (
-                <View>
-                  <Text>No Info</Text>
-                </View>
-              );
             })}
         </>
       )}

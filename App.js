@@ -4,6 +4,7 @@ import AuthSwitch from "./src/navigations/AuthSwitch";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import tw from "twrnc"
+import AuthClerk from "./src/Clerk/AuthClerk";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,7 +29,9 @@ export default function App() {
   return (
     <View onLayout={onLayoutRootView} style={tw`flex-1`}>
       <AuthSwitch />
+      {/* <AuthClerk /> */}
     </View>
-
   );
 }
+
+

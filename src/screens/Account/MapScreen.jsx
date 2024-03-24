@@ -24,7 +24,7 @@ const MapScreen = ({navigation, route}) => {
 
   const fetchPlaces = async (latitude, longitude) => {
     console.log("FetchPlaces", latitude, longitude)
-    const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${filter}&location=${latitude},${longitude}&radius=3000&key=${GlobalApi.API_KEY}`;
+    const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${filter}&location=${latitude},${longitude}&radius=5000&key=${GlobalApi.API_KEY}`;
     console.log("URL", url)
     try {
       const response = await axios.get(url);
@@ -60,7 +60,7 @@ const MapScreen = ({navigation, route}) => {
       {/* <View style={tw`mt-15 absolute z-10 w-full px-5`}>
         <Searchbar searchedLocation={(location) => console.log(location)} />
       </View> */}
-      <TouchableOpacity style={tw`absolute z-10 top-10 mx-3 bg-white rounded-2 p-2`} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={tw`absolute z-10 top-10 mx-3 bg-white rounded-2 p-2 shadow-md`} onPress={() => navigation.goBack()}>
           <AntDesign
             name="arrowleft"
             size={25}

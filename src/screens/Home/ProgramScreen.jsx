@@ -76,7 +76,9 @@ const ProgramScreen = ({ navigation, route }) => {
         style={tw`flex-1`}
       >
         <View style={tw`items-center mt-15 mb-5`}>
-          <Text style={{fontFamily: "inter-bold", ...tw`text-2xl `}}>Program</Text>
+          <Text style={{ fontFamily: "inter-bold", ...tw`text-2xl ` }}>
+            Program
+          </Text>
         </View>
         <View style={tw`items-center `}>
           {!loading ? (

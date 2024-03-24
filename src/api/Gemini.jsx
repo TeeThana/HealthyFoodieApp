@@ -105,9 +105,25 @@ export const Gemini = async (userInfo, weight, username) => {
 
       // console.log("model res: ", response);
 
+      // หลังจากที่ได้รับข้อมูลมาจากโมเดลแล้ว
       if (isValidJSON(response)) {
         const jsonResponse = JSON.parse(response, null, 2);
 
+        // เพิ่ม key checked ใน excercisePlan และ mealPlan
+        jsonResponse.ตารางการออกกำลังกาย.forEach((item) => {
+          item.checked = false;
+        });
+
+        jsonResponse.ตารางการรับประทานอาหาร.forEach((item) => {
+          item.checked = false;
+        });
+
+        // เพิ่ม key checkedAll ใน jsonResponse และกำหนดค่าเป็น false
+        jsonResponse.checkedAll = false;
+
+        console.log("json: ", jsonResponse);
+
+        // ตรวจสอบข้อมูล JSON ที่ได้รับกลับมา
         if (isEmptyJSON(jsonResponse)) {
           console.log("refresh...");
           if (retryCount > 0) {
@@ -118,12 +134,12 @@ export const Gemini = async (userInfo, weight, username) => {
           }
         } else {
           if (
-            jsonResponse !=
-            {
-              ตารางการรับประทานอาหาร: [],
-              ตารางการออกกำลังกาย: [],
+            JSON.stringify(jsonResponse) !==
+            JSON.stringify({
+              excercisePlan: [],
+              mealPlan: [],
               ระยะเวลาที่แนะนำ: "",
-            }
+            })
           ) {
             await storeToDB(username, jsonResponse, weight, currentDate);
             return { status: "success" };
@@ -178,8 +194,6 @@ function isEmptyJSON(jsonObject) {
 }
 
 const storeToDB = async (username, jsonResponse, weight, currentDate) => {
-  // console.log("json: ", typeof jsonResponse, ": ", jsonResponse);
-  // console.log("goal: ", weight);
   try {
     const colRef = collection(db, "UserPlan");
     const docRef = doc(colRef, username);
@@ -201,6 +215,7 @@ const storeToDB = async (username, jsonResponse, weight, currentDate) => {
       await setDoc(subDocRef, {
         mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
         exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],
+        checkedAll: false
       });
     } else {
       const check = await getDoc(docRef);
@@ -216,6 +231,7 @@ const storeToDB = async (username, jsonResponse, weight, currentDate) => {
       await setDoc(subDocRef, {
         mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
         exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],
+        checkedAll: false,
       });
     }
 
@@ -226,14 +242,13 @@ const storeToDB = async (username, jsonResponse, weight, currentDate) => {
 };
 
 export const getData = async (username, currentDate) => {
-  console.log("Getting data: ", username, currentDate);
   try {
     const docRef = doc(db, "UserPlan", username, "plan", currentDate);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       const data = docSnap.data();
-      console.log("Document data:", data);
+      // console.log("Document data:", data);
       return { status: "success", data: data };
     } else {
       console.log("No such document!");
