@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
-  FlatList
+  FlatList,
 } from "react-native";
 import tw from "twrnc";
 import * as Progress from "react-native-progress";
@@ -17,7 +17,6 @@ import ProgressDairy from "../components/ProgressDairy";
 //Api
 import { Gemini, getData, getFirstDocName } from "../api/Gemini";
 
-
 const QuestDairy = ({ weight }) => {
   const [checked, setChecked] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +24,6 @@ const QuestDairy = ({ weight }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [progress, setProgress] = useState(0);
   const [countData, setCountData] = useState(1);
-  console.log("Count", countData);
 
   useEffect(() => {
     const input = async () => {
@@ -34,25 +32,25 @@ const QuestDairy = ({ weight }) => {
       const parsedUserData = JSON.parse(userData);
       setUserInfo(parsedUserData);
       await requestPlan(parsedUserData, username);
-      console.log(
-        "input from async storage: ",
-        parsedUserData,
-        "user:",
-        username
-      );
+      // console.log(
+      //   "input from async storage: ",
+      //   parsedUserData,
+      //   "user:",
+      //   username
+      // );
     };
     input();
   }, []);
 
-   const handleChecked = (index) => {
-     console.log(index);
-     setChecked((prevChecked) => {
-       const updatedChecked = [...prevChecked];
-       updatedChecked[index] = !updatedChecked[index];
-       return updatedChecked;
-     });
-     setProgress((prevProgress) => prevProgress + 1);
-   };
+  const handleChecked = (index) => {
+    //  console.log(index);
+    setChecked((prevChecked) => {
+      const updatedChecked = [...prevChecked];
+      updatedChecked[index] = !updatedChecked[index];
+      return updatedChecked;
+    });
+    setProgress((prevProgress) => prevProgress + 1);
+  };
 
   const requestPlan = async (userInfo, username) => {
     setLoading(true);
@@ -65,7 +63,7 @@ const QuestDairy = ({ weight }) => {
       let data = await getData(username, currentDate);
 
       if (data && data.status === "success") {
-        console.log("pull data success");
+        // console.log("pull data success");
         setData(data.data);
 
         const [mealPlanData, exercisePlanData] = await Promise.all([
@@ -75,15 +73,14 @@ const QuestDairy = ({ weight }) => {
 
         const countIndex = mealPlanData.length + exercisePlanData.length;
         setCountData(countIndex);
-
       } else {
         const res = await Gemini(userInfo, weight, username);
-        console.log("quest: ", res && res.status);
+        // console.log("quest: ", res && res.status);
 
         if (res && res.status === "success") {
           data = await getData(username, currentDate);
           if (data && data.status === "success") {
-            console.log("pull data success");
+            // console.log("pull data success");
             setData(data.data);
           }
         }
@@ -94,8 +91,6 @@ const QuestDairy = ({ weight }) => {
       setLoading(false);
     }
   };
-
-  console.log("data: ", data);
 
   return (
     <>
@@ -110,12 +105,14 @@ const QuestDairy = ({ weight }) => {
             Object.entries(data).map(([key, value]) => {
               if (key === "exercisePlan" || key === "mealPlan") {
                 return value.map((item, index) => {
+                  // สร้าง key ที่ไม่ซ้ำกันโดยใช้ key และ index
+                  const uniqueKey = `${key}-${index}`;
                   if (key === "exercisePlan") {
                     index += 3;
                   }
                   return (
                     <View
-                      key={index}
+                      key={uniqueKey}
                       style={tw`items-baseline bg-white w-5/6 h-20 mt-5 rounded-lg shadow-md flex flex-row justify-between items-center px-4`}
                     >
                       <View style={tw`w-3/5`}>
@@ -151,11 +148,6 @@ const QuestDairy = ({ weight }) => {
                   );
                 });
               }
-              return (
-                <View>
-                  <Text>No Info</Text>
-                </View>
-              );
             })}
         </>
       )}

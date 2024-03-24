@@ -15,23 +15,28 @@ import { FontAwesome5 } from "@expo/vector-icons";
 
 
 const DecreaseWeight = ({ navigation }) => {
-  const [weight, setWeight] = useState("");
+  const [weightGoal, setWeightGoal] = useState("");
 
   const handleWeightChange = (text) => {
-    setWeight(text);
+    setWeightGoal(text);
   };
 
   const handleSaveWeight = () => {
-    console.log("Weight:", weight);
+    console.log("Weight:", weightGoal);
+    navigation.navigate("Program", { weightGoal: weightGoal });
+  };
+
+  const backHandler = () => {
+    // signedOut();
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <LinearGradient
-        colors={["#00D49D", "#FFFFFF"]}
+        colors={["#FFFFFF", "#6AFFD8", "#00D49D"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
-        locations={[0, 1]}
+        locations={[0.6, 1, 1]}
         style={styles.background}
       >
         <View>
@@ -50,7 +55,7 @@ const DecreaseWeight = ({ navigation }) => {
               style={styles.input}
               placeholder="Enter your weight"
               keyboardType="numeric"
-              value={weight}
+              value={weightGoal}
               onChangeText={handleWeightChange}
             />
             <TouchableOpacity
@@ -76,12 +81,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    color: "white",
+    color: "#00D49D",
     fontSize: 16,
     textTransform: "uppercase",
     marginBottom: 30,
     fontWeight: "bold",
-    fontSize: "25px",
   },
   input: {
     height: 50,

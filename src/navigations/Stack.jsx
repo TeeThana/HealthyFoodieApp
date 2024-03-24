@@ -13,6 +13,8 @@ import HomeScreen from "../screens/Home/HomeScreen";
 import IncreaseWeight from "../screens/Home/IncreaseWeight";
 import DecreaseWeight from "../screens/Home/DecreaseWeight";
 import ProgramScreen from "../screens/Home/ProgramScreen";
+import RewardScreen from "../screens/Account/Reward/RewardScreen";
+import MyRewardSreen from "../screens/Account/Reward/MyRewardSreen";
 
 
 //Components
@@ -32,8 +34,6 @@ export const AuthStack = () => {
 };
 
 export const HomeStack = ({ isPlan }) => {
-  console.log("plan: ", isPlan);
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -70,8 +70,8 @@ export const AccountStack = () => {
       <Account.Screen name="AccountMain" component={AccountScreen} />
       {/* <Account.Screen name="Profile" component={ProfileScreen} /> */}
       <Account.Screen name="Information" component={InfoScreen} />
-      {/* <Account.Screen name="Rewards" component={RewardsScreen} /> */}
-      {/* <Account.Screen name="MyRewards" component={MyRewardsScreen} /> */}
+      <Account.Screen name="Rewards" component={RewardScreen} />
+      <Account.Screen name="MyRewards" component={MyRewardSreen} />
       <Account.Screen name="Maps" component={MapScreen} />
     </Account.Navigator>
   );

@@ -13,7 +13,6 @@ import { LinearGradient } from "expo-linear-gradient";
 //Icon
 import { FontAwesome5 } from "@expo/vector-icons";
 
-
 const IncreaseWeight = ({ navigation }) => {
   const [weightGoal, setWeightGoal] = useState("");
 
@@ -50,7 +49,7 @@ const IncreaseWeight = ({ navigation }) => {
             />
           </TouchableOpacity>
           <View style={styles.container}>
-            <Text style={styles.text}>increase goal</Text>
+            <Text style={styles.text}>Increase goal</Text>
             <TextInput
               style={styles.input}
               placeholder="Enter your weight"

@@ -9,7 +9,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleDecrease = () => {
-    navigation.navigate("Increase");
+    navigation.navigate("Decrease");
   };
 
   return (

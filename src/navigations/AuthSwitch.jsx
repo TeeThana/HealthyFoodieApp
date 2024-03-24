@@ -36,6 +36,19 @@ const AuthSwitch = () => {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log("auth state: ", user.email);
+        setUser(user.email.split("@")[0]);
+        await AsyncStorage.setItem("username", user.email.split("@")[0]);
+        await fetchUserInfo(user.email.split("@")[0]);
+        await fetchPlan(user.email.split("@")[0]);
+      } else {
+        console.log("no user");
+        setUser(null);
+      }
+    });
+    
     const getLocationAndPermissions = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -50,18 +63,7 @@ const AuthSwitch = () => {
 
     getLocationAndPermissions();
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        console.log("auth state: ", user.email);
-        setUser(user.email.split("@")[0]);
-        await AsyncStorage.setItem("username", user.email.split("@")[0]);
-        await fetchUserInfo(user.email.split("@")[0]);
-        await fetchPlan(user.email.split("@")[0]);
-      } else {
-        console.log("no user");
-        setUser(null);
-      }
-    });
+    
   }, []);
 
   let text = "Waiting..";

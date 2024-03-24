@@ -49,7 +49,7 @@ const ProgramScreen = ({ navigation, route }) => {
           console.log(modifiedTimeRange);
           console.log(goal);
           setGoalDay(countDay);
-          setWeight("50");
+          setWeight(goal);
         } else {
           console.log("no doc:", route.params.weightGoal.toString());
           setWeight(route.params.weightGoal.toString());
@@ -76,7 +76,9 @@ const ProgramScreen = ({ navigation, route }) => {
         style={tw`flex-1`}
       >
         <View style={tw`items-center mt-15 mb-5`}>
-          <Text style={{fontFamily: "inter-bold", ...tw`text-2xl `}}>Program</Text>
+          <Text style={{ fontFamily: "inter-bold", ...tw`text-2xl ` }}>
+            Program
+          </Text>
         </View>
         <View style={tw`items-center `}>
           {!loading ? (
@@ -85,7 +87,7 @@ const ProgramScreen = ({ navigation, route }) => {
                 <View
                   style={tw`bg-white w-5/6 h-4/6 mt-20 shadow-md items-center`}
                 >
-                  <QuestDairy />
+                  <QuestDairy weight={weight} />
                 </View>
               </View>
               {weight && <ProgressBar weight={weight} goal={goalDay} />}

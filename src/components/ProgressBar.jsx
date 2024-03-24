@@ -50,13 +50,13 @@ const ProgressBar = ({ weight, goal }) => {
           borderWidth={0}
           height={8}
         />
-        <TextInput
+        {/* <TextInput
           style={tw`mt-5 `}
           placeholder="Enter your percent"
           keyboardType="numeric"
           value={percent}
           onChangeText={handleWeightChange}
-        />
+        /> */}
       </View>
     </View>
   );

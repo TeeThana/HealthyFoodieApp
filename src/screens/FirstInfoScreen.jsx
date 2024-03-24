@@ -78,7 +78,7 @@ const FirstInfoScreen = ({ onSuccess }) => {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3500);
+    }, 4000);
   }, []);
 
   const [allergyInput, setAllergyInput] = useState("");
@@ -100,8 +100,8 @@ const FirstInfoScreen = ({ onSuccess }) => {
   };
 
   const handleGenerate = async (userData) => {
-    console.log("Username:", userName);
-    console.log("Generate:", userData);
+    // console.log("Username:", userName);
+    // console.log("Generate:", userData);
     try {
       await setDoc(doc(db, "UserInfo", userName), {
         firstName: userData.firstName,
@@ -156,8 +156,8 @@ const FirstInfoScreen = ({ onSuccess }) => {
       dateOfBirth: fDate,
     }));
     setDateText(fDate);
-    console.log(fDate);
-    console.log(userData);
+    // console.log(fDate);
+    // console.log(userData);
   };
 
   const showMode = () => {

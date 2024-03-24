@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -8,30 +8,28 @@ import {
   TextInput,
   Button,
   Text,
+  Modal,
+  Animated,
+  PanResponder,
 } from "react-native";
+import GestureRecognizer from "react-native-swipe-gestures";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome5 } from "@expo/vector-icons";
 import tw from "twrnc";
-// import * as WebBrowser from "expo-web-browser";
+import LottieView from "lottie-react-native";
 
 //Auth
-import { UserAuth } from "../api/Authentication";
-// import { useOAuth } from "@clerk/clerk-expo";
-// import { useWarmUpBrowser } from "../../hooks/warmUpBrowser";
+import { ForgetPass, UserAuth } from "../api/Authentication";
 
 const windowWidth = Dimensions.get("window").width;
 const fontSize = windowWidth * 0.2;
 
-// WebBrowser.maybeCompleteAuthSession();
-
 const SignInScreen = ({ navigation }) => {
-  // useWarmUpBrowser();
-
-  // const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [submit, setSubmit] = useState(false);
 
   const handleSignIn = async (user, pass) => {
     setPasswordError(false);
@@ -55,27 +53,22 @@ const SignInScreen = ({ navigation }) => {
     }
   };
 
-  // const onGoogleSignIn = async () => {
-  //   try {
-  //    const { createdSessionId, signIn, signUp, setActive } =
-  //       await startOAuthFlow();
-  //     if (createdSessionId) {
-  //       console.log(signIn)
-  //       console.log(signUp)
-  //       setActive({ session: createdSessionId });
-  //     } else {
-  //       // Modify this code to use signIn or signUp to set this missing requirements you set in your dashboard.
-  //       console.log(signIn);
-  //       console.log(signUp);
+  const forgetPass = async (user) => {
+    setSubmit(true);
+    try {
+      const res = await ForgetPass(user);
+      if (res.status === false) {
+        console.log("reset mail fail msg: ", res.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  //       throw new Error(
-  //         "There are unmet requirements, modifiy this else to handle them",
-  //       );
-  //     }
-  //   } catch (err) {
-  //     console.error("OAuth error", err);
-  //   }
-  // };
+  const handleDonePress = () => {
+    setIsModalVisible(false);
+    setSubmit(false);
+  };
 
   return (
     <LinearGradient
@@ -136,7 +129,9 @@ const SignInScreen = ({ navigation }) => {
             }}
             onPress={() => navigation.navigate("SignUp")}
           >
-            <Text style={{ color: "#fff", fontFamily: "inter-bold", fontSize: 15 }}>
+            <Text
+              style={{ color: "#fff", fontFamily: "inter-bold", fontSize: 15 }}
+            >
               Sign Up
             </Text>
           </TouchableOpacity>
@@ -173,7 +168,7 @@ const SignInScreen = ({ navigation }) => {
           />
           <TextInput
             style={styles.userInput}
-            placeholder="Username"
+            placeholder="Email"
             placeholderTextColor="rgba(49, 48, 71, 0.70)"
             underlineColor="transparent"
             value={username}
@@ -209,7 +204,7 @@ const SignInScreen = ({ navigation }) => {
         </View>
         <TouchableOpacity
           style={styles.forgotPassword}
-          onPress={() => console.log("forgot password")}
+          onPress={() => setIsModalVisible(true)}
         >
           <Text
             style={{
@@ -243,44 +238,141 @@ const SignInScreen = ({ navigation }) => {
             Sign In
           </Text>
         </TouchableOpacity>
-        {/* <View style={styles.horizontalLineZone}>
-          <View style={styles.horizontalLine1} />
-          <Text
-            style={{
-              color: "#313047",
-              fontSize: 15,
-              fontStyle: "normal",
-              fontWeight: "700",
-              marginTop: 45,
-              marginHorizontal: "2%",
-            }}
-          >
-            OR
-          </Text>
-          <View style={styles.horizontalLine2} />
-        </View>
-        <TouchableOpacity
-          style={[
-            styles.googleButton,
-            {
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "auto",
-            },
-          ]}
-          onPress={() => onGoogleSignIn()}
+        <GestureRecognizer
+          style={tw`flex-1`}
+          onSwipeDown={() => handleDonePress()}
         >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Image
-              source={require("../../assets/google.png")}
-              style={{ width: 35, height: 35, marginRight: 18 }}
-            />
-            <Text style={{ color: "#767676", fontWeight: "700", fontSize: 20 }}>
-              Continue with Google
-            </Text>
-          </View>
-        </TouchableOpacity> */}
+          <Modal
+            visible={isModalVisible}
+            animationType="slide"
+            transparent={true}
+            swipeDirection="down"
+          >
+            <View
+              style={tw`flex-1 flex-row justify-center items-end bg-black bg-opacity-50`}
+            >
+              <View style={tw`h-3/5 w-full bg-[#f5f5f4] rounded-3xl`}>
+                {submit ? (
+                  <View style={tw`flex items-center justify-center`}>
+                    <View style={tw`w-full items-center mt-8`}>
+                      <View
+                        style={tw`border-2 rounded-lg w-1/6 border-[#d1d5db]`}
+                      ></View>
+                    </View>
+                    <LottieView
+                      source={require("../utils/success_animation.json")} // Import your animation JSON file
+                      autoPlay
+                      style={tw`w-1/2 h-1/2`}
+                    />
+                    <Text
+                      style={{
+                        fontFamily: "inter-bold",
+                        ...tw`text-lg`,
+                      }}
+                    >
+                      Password reset email sent successfully!
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: "inter-medium",
+                        ...tw`mt-2 text-base`,
+                      }}
+                    >
+                      Please check your email.{" "}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => handleDonePress()}
+                      style={tw`flex-row mt-10 bg-[#34d399] p-2 rounded-lg w-22 justify-center`}
+                    >
+                      <Text
+                        style={{
+                          color: "#ffff",
+                          fontSize: 16,
+                          fontFamily: "inter-bold",
+                        }}
+                      >
+                        Done!
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <>
+                    <View style={tw`w-full items-center mt-8`}>
+                      <View
+                        style={tw`border-2 rounded-lg w-1/6 border-[#d1d5db]`}
+                      ></View>
+                    </View>
+                    <Text
+                      style={{
+                        fontFamily: "inter-bold",
+                        ...tw`text-3xl mt-7 ml-8`,
+                      }}
+                    >
+                      Forgot Password
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: "inter-medium",
+                        ...tw` mt-5 ml-9 mb-12`,
+                      }}
+                    >
+                      Please enter your email to send a reset password
+                      {"\n"}email.
+                    </Text>
+                    <View style={tw` items-center justify-center`}>
+                      <View style={tw`flex w-3/4`}>
+                        <Text
+                          style={{
+                            fontFamily: "inter-medium",
+                            ...tw`mb-2 `,
+                          }}
+                        >
+                          Email
+                        </Text>
+                        <TextInput
+                          placeholderTextColor="rgba(49, 48, 71, 0.70)"
+                          style={tw`bg-white rounded-lg h-10 w-full p-2`}
+                          value={username}
+                          onChangeText={(text) => setUsername(text)}
+                        />
+                      </View>
+                    </View>
+                    <View style={tw`flex-row items-center justify-center`}>
+                      <TouchableOpacity
+                        onPress={() => setIsModalVisible(false)}
+                        style={tw`flex-row mt-10 mr-28 bg-[#f87171] p-2 rounded-lg w-22 justify-center`}
+                      >
+                        <Text
+                          style={{
+                            color: "#ffff",
+                            fontSize: 16,
+                            fontFamily: "inter-bold",
+                          }}
+                        >
+                          Cancel
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => forgetPass(username)}
+                        style={tw`flex-row mt-10 bg-[#3b82f6] p-2 rounded-lg w-22 justify-center`}
+                      >
+                        <Text
+                          style={{
+                            color: "#ffff",
+                            fontSize: 16,
+                            fontFamily: "inter-bold",
+                          }}
+                        >
+                          Submit
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
+              </View>
+            </View>
+          </Modal>
+        </GestureRecognizer>
       </View>
     </LinearGradient>
   );

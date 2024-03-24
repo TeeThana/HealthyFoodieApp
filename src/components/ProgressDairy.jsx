@@ -4,10 +4,7 @@ import tw from "twrnc";
 import * as Progress from "react-native-progress";
 
 const ProgressDairy = ({ progress, countDiary }) => {
-  console.log("Progress", typeof progress);
-  console.log("Diary", typeof countDiary);
   const [percent, setPercent] = useState(0);
-  console.log(percent);
 
   useEffect(() => {
     if (progress !== undefined && countDiary !== undefined) {

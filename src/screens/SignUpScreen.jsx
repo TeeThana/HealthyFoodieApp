@@ -99,7 +99,7 @@ const SignUpScreen = ({ navigation }) => {
           />
           <TextInput
             style={styles.userInput}
-            placeholder="Username"
+            placeholder="Email"
             placeholderTextColor="rgba(49, 48, 71, 0.70)"
             underlineColor="transparent"
             value={username}
