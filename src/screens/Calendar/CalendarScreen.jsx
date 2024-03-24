@@ -17,7 +17,6 @@ import {
   query,
 } from "firebase/firestore";
 
-
 const CalenderScreen = () => {
   const [press, setPress] = useState(false);
   const [data, setData] = useState([]);
@@ -58,7 +57,7 @@ const CalenderScreen = () => {
     let markYear = parseInt(start.split("-")[0]);
 
     // Highlight the start date and range
-    
+
     const marked = {};
     const formattedMonth = markMonth.toString().padStart(2, "0");
     const formattedDay = markDay.toString().padStart(2, "0");
@@ -118,8 +117,6 @@ const CalenderScreen = () => {
         color: "lightblue",
       };
     }
-
-    
 
     setMarkedDates(marked);
   };
@@ -209,7 +206,7 @@ const CalenderScreen = () => {
                     <>
                       {item.exercise ? (
                         <Text style={{ fontFamily: "inter-medium" }}>
-                          Exercise Plan: {item.exercise} นาที
+                          {item.exercise} นาที
                         </Text>
                       ) : null}
                       {item.meal ? <Text>{item.meal}</Text> : null}
