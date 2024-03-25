@@ -9,6 +9,7 @@ import {
   Pressable,
   Platform,
   TextInput,
+  ActivityIndicator
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
@@ -46,6 +47,7 @@ const InfoScreen = ({ navigation }) => {
     dateOfBirth: "",
     fullDate: "",
   });
+  console.log(userData)
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
@@ -123,6 +125,7 @@ const InfoScreen = ({ navigation }) => {
         weight: userData.weight,
         allergy: userData.allergy,
       });
+      navigation.goBack()
       console.log("Added Info Successfully");
     } catch (err) {
       console.error("Generate Error!", err.message);
@@ -353,7 +356,7 @@ const InfoScreen = ({ navigation }) => {
               <View>
                 <TouchableOpacity
                   style={{
-                    backgroundColor: "#00D49D",
+                    backgroundColor: hasChanges ? "#00D49D" : "#E3E3E3",
                     ...tw` justify-center items-center rounded-lg mx-5 h-10`,
                   }}
                   onPress={() => handleGenerate(userData)}

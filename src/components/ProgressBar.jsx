@@ -1,15 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, Text, TextInput, ActivityIndicator } from "react-native";
 import tw from "twrnc";
 import * as Progress from "react-native-progress";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { RecommendDays } from "../api/Gemini";
 
 
-const ProgressBar = ({ weight, goal }) => {
-  const [percent, setPercent] = useState(weight);
-  const [userInfo, setUserInfo] = useState(null);
+const ProgressBar = ({ progress, goal }) => {
+  console.log(goal)
+  console.log("Progress Bar",progress)
+  const [loading, setLoading] = useState(false)
+  const [percent, setPercent] = useState(0);
+  console.log("Percent", percent)
 
+  useEffect(() => {
+    setLoading(true)
+    setPercent(progress)
+    setLoading(false)
+  }, [progress])
 //   useEffect(() => {
 //     const input = async () => {
 //       const userData = await AsyncStorage.getItem("userInfo");
@@ -27,15 +35,13 @@ const ProgressBar = ({ weight, goal }) => {
 //     console.log("goal: ", res );
 //   };
 
-  const handleWeightChange = (percent) => {
-    setPercent(percent);
-  };
-
   return (
-    <View style={tw`absolute bg-white w-5/6 h-30 rounded-lg shadow-md`}>
-      <View style={tw`flex flex-row mt-5 justify-between px-5`}>
+    <View style={tw`absolute z-10 bg-white w-5/6 h-30 rounded-lg shadow-md`}>
+      { !loading ? (
+        <>
+        <View style={tw`flex flex-row mt-5 justify-between px-5`}>
         <Text style={{ fontFamily: "inter-bold", ...tw`text-black` }}>
-          Day 1
+          Start
         </Text>
         <Text style={{ fontFamily: "inter-bold", ...tw`text-black` }}>
           Day {goal}
@@ -58,6 +64,12 @@ const ProgressBar = ({ weight, goal }) => {
           onChangeText={handleWeightChange}
         /> */}
       </View>
+        </>
+      )
+      : (
+        <ActivityIndicator/>
+      )}
+      
     </View>
   );
 };

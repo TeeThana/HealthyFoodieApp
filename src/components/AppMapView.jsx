@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Text, View } from "react-native";
-import axios from 'axios';
 import tw from "twrnc";
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import MapViewStyle from "../utils/MapViewStyle";
 import { UserLocationContext } from '../contexts/UserLocationContext';
 import Markers from './Markers';
-import GlobalApi from '../utils/GlobalApi';
+import MapViewDirections from 'react-native-maps-directions';
 
 const AppMapView = ({placeList}) => {
+  
     const { location, setLocation } = useContext(UserLocationContext);
+
     // console.log("AppMapView", placeList);
     return (
       location?.coords.latitude && (
@@ -36,6 +37,11 @@ const AppMapView = ({placeList}) => {
             >
               {/* <MaterialIcons name="my-location" size={35} color="#3b82f6" /> */}
             </Marker>: null}
+            {/* <MapViewDirections
+              origin={origin}
+              destination={destination}
+              apikey={GlobalApi.API_KEY}
+            /> */}
             {placeList && placeList.map((item, index) => (
               <Markers key={index}
               index={index}

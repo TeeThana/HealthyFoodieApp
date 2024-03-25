@@ -5,6 +5,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import tw from "twrnc"
 import AuthClerk from "./src/Clerk/AuthClerk";
+import Toast from "react-native-toast-message";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,6 +30,17 @@ export default function App() {
   return (
     <View onLayout={onLayoutRootView} style={tw`flex-1`}>
       <AuthSwitch />
+      <Toast 
+      text1Style={{
+        fontSize: 20,
+        fontWeight: '400'
+      }}
+      text2Style={{
+        fontSize: 15,
+        fontWeight: '300'
+      }}
+      visibilityTime = {5000}
+      />
       {/* <AuthClerk /> */}
     </View>
   );

@@ -13,11 +13,12 @@ import { SelectMarkerContext } from "../../contexts/SelectMarkerContext";
 import {AntDesign} from "@expo/vector-icons";
 
 const MapScreen = ({navigation, route}) => {
-  console.log(route.params.menu)
+  console.log("Menu",route.params.menu)
   const [ filter, setFilter] = useState(route.params.menu)
   const { location, setLocation } = useContext(UserLocationContext);
   const [placeList, setPlaceList] = useState()
   const [selectedMarker, setSelectedMarker] = useState([]);
+
   useEffect(() => {
     location&&fetchPlaces(location?.coords?.latitude, location?.coords?.longitude);
   },[location])

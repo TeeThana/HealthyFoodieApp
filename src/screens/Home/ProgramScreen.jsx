@@ -1,32 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect} from "react";
 import {
   View,
   Text,
   TouchableWithoutFeedback,
   Keyboard,
   ActivityIndicator,
-  FlatList
+  FlatList,
+  TouchableOpacity
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import tw from "twrnc";
+import Toast from 'react-native-toast-message';
 
 //Components
 import ProgressBar from "../../components/ProgressBar";
-import ProgressDairy from "../../components/ProgressDairy";
 import QuestDairy from "../../components/QuestDairy";
 
 //api
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
+import { RefreshContext } from "../../contexts/RefreshContext";
 
 const ProgramScreen = ({ navigation, route }) => {
+
+
   const [weight, setWeight] = useState(null);
+  const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const [goalDay, setGoalDay] = useState(null);
 
   useEffect(() => {
-    const fetchPlan = async () => {
+    const fetchData = async () => {
       setLoading(true);
+      await fetchPlan();
+      setLoading(false);
+    };
+  
+    fetchData();
+  }, [refresh]);
+
+    const fetchPlan = async () => {
+      
       try {
         const username = await AsyncStorage.getItem("username");
         const docRef = doc(db, "UserPlan", username);
@@ -38,7 +54,7 @@ const ProgramScreen = ({ navigation, route }) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           const goal = data && data.goal;
-          console.log(data.timeRange);
+          // console.log(data.timeRange);
           const modifiedTimeRange =
             data && data.timeRange
               ? data.timeRange.replace(/สัปดาห์/g, "").trim()
@@ -46,27 +62,50 @@ const ProgramScreen = ({ navigation, route }) => {
           const countDay = modifiedTimeRange
             ? parseInt(modifiedTimeRange, 10) * 7
             : 0;
-          console.log(modifiedTimeRange);
-          console.log(goal);
+          // console.log(modifiedTimeRange);
+          // console.log(goal);
           setGoalDay(countDay);
           setWeight(goal);
-        } else {
+          await fetchProgress()
+        } 
+        else {
           console.log("no doc:", route.params.weightGoal.toString());
           setWeight(route.params.weightGoal.toString());
+          console.log("fetchPlan", weight)
         }
       } catch (err) {
         console.error("getDoc error: ", err);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
-    fetchPlan();
-  }, []);
-
-  const [goalDay, setGoalDay] = useState();
+    const fetchProgress = async() => {
+      const username = await AsyncStorage.getItem("username");
+      try {
+        const userPlanDocRef = collection(db, "UserPlan", username, "plan");
+        const q = query(userPlanDocRef, where("checkedAll", "==", true))
+        const data = await getDocs(q)
+        // data.forEach((doc) => {
+        //   console.log(doc.id)
+        // })
+        const count = data.size;
+        console.log("C",count)
+        if ( refresh === true) {
+          setProgress(count+1)
+          
+        }else {
+          setProgress(count)
+        }
+        // console.log("Data", data)
+      }catch (err) {
+        console.error("quest res err: ", err);
+      }
+      // finally {
+      //   setLoading(false);
+      // }
+    }
 
   return (
+    <RefreshContext.Provider value={{refresh, setRefresh}}>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <LinearGradient
         colors={["#00D49D", "#6AFFD8", "#FFFFFF"]}
@@ -76,21 +115,25 @@ const ProgramScreen = ({ navigation, route }) => {
         style={tw`flex-1`}
       >
         <View style={tw`items-center mt-15 mb-5`}>
+          <TouchableOpacity >
           <Text style={{ fontFamily: "inter-bold", ...tw`text-2xl ` }}>
             Program
           </Text>
+          </TouchableOpacity>
+          {/* <Toast /> */}
         </View>
         <View style={tw`items-center `}>
           {!loading ? (
             <>
+              {weight && <ProgressBar progress={progress} goal={goalDay} />}
               <View style={tw`bg-gray-100 w-full h-full mt-20 items-center`}>
                 <View
-                  style={tw`bg-white w-5/6 h-4/6 mt-20 shadow-md items-center`}
+                  style={tw`bg-green-100 w-5/6 h-4/7 mt-20 shadow-md items-center`}
                 >
-                  <QuestDairy navigation={navigation} weight={weight}/>
+                  {weight && <QuestDairy navigation={navigation} weight={weight}/>}
                 </View>
               </View>
-              {weight && <ProgressBar weight={weight} goal={goalDay} />}
+              
             </>
           ) : (
             <View style={tw`bg-gray-100 w-full h-full mt-20 items-center`}>
@@ -100,6 +143,7 @@ const ProgramScreen = ({ navigation, route }) => {
         </View>
       </LinearGradient>
     </TouchableWithoutFeedback>
+    </RefreshContext.Provider>
   );
 };
 

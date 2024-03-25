@@ -16,7 +16,7 @@ const ProgressDairy = ({ progress, countDiary }) => {
   return (
     <View style={tw`bg-white w-5/6 h-20 mt-5 rounded-lg shadow-md`}>
       <View style={tw`items-center`}>
-        <Text style={{ fontFamily: "inter-bold", ...tw`uppercase text-black mt-5`}}>dairy</Text>
+        <Text style={{ fontFamily: "inter-bold", ...tw`uppercase text-black mt-5`}}>diary</Text>
       </View>
       <View style={tw`mt-5 items-center`}>
         <Progress.Bar

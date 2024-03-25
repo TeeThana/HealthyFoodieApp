@@ -120,6 +120,7 @@ export const Gemini = async (userInfo, weight, username) => {
 
         // เพิ่ม key checkedAll ใน jsonResponse และกำหนดค่าเป็น false
         jsonResponse.checkedAll = false;
+        jsonResponse.checkedCount = 0;
 
         console.log("json: ", jsonResponse);
 
@@ -194,6 +195,7 @@ function isEmptyJSON(jsonObject) {
 }
 
 const storeToDB = async (username, jsonResponse, weight, currentDate) => {
+  // console.log("storeToDB", weight)
   try {
     const colRef = collection(db, "UserPlan");
     const docRef = doc(colRef, username);
@@ -215,7 +217,8 @@ const storeToDB = async (username, jsonResponse, weight, currentDate) => {
       await setDoc(subDocRef, {
         mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
         exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],
-        checkedAll: false
+        checkedAll: false,
+        checkedCount: 0
       });
     } else {
       const check = await getDoc(docRef);
@@ -232,6 +235,7 @@ const storeToDB = async (username, jsonResponse, weight, currentDate) => {
         mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
         exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],
         checkedAll: false,
+        checkedCount: 0
       });
     }
 

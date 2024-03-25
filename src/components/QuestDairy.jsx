@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 import tw from "twrnc";
 import * as Progress from "react-native-progress";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 //Components
 import ProgressDairy from "../components/ProgressDairy";
@@ -22,14 +23,18 @@ import { db } from "../../firebaseConfig";
 //Icons
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import { RefreshContext } from "../contexts/RefreshContext";
 
 const QuestDairy = ({ navigation, weight }) => {
+  // console.log("QuestDairy",weight)
   const [checked, setChecked] = useState([]);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [progress, setProgress] = useState(0);
   const [countData, setCountData] = useState(1);
+  const {refresh, setRefresh} = useContext(RefreshContext)
+  const [reward, setReward] = useState(0)
 
   useEffect(() => {
     const input = async () => {
@@ -37,7 +42,7 @@ const QuestDairy = ({ navigation, weight }) => {
       const userData = await AsyncStorage.getItem("userInfo");
       const parsedUserData = JSON.parse(userData);
       setUserInfo(parsedUserData);
-      await requestPlan(parsedUserData, username);
+      await requestPlan(parsedUserData, username, weight);
       // console.log(
       //   "input from async storage: ",
       //   parsedUserData,
@@ -48,13 +53,18 @@ const QuestDairy = ({ navigation, weight }) => {
     input();
   }, []);
 
+  useEffect(() => {
+    console.log("Get Reward",reward)
+  }, [reward])
+
   const handleMaps = (menu) => {
     navigation.navigate("Maps", { menu: menu });
   };
 
   const handleChecked = async (key, index) => {
+    
     const username = await AsyncStorage.getItem("username");
-    console.log(key, index);
+    // console.log(key, index);
     const currentDate = new Date()
       .toLocaleDateString("en-GB")
       .split("/")
@@ -80,10 +90,25 @@ const QuestDairy = ({ navigation, weight }) => {
             userPlanData.exercisePlan.every((item) => item.checked) &&
             userPlanData.mealPlan.every((item) => item.checked);
 
+            
           // อัปเดต checkedAll เป็น true หากทุก index ในทั้ง exercisePlan และ mealPlan มี checked เป็น true
           if (allChecked) {
             userPlanData.checkedAll = true;
+            Toast.show({
+              type: 'success',
+              text1: 'Diary Program Success!!!',
+              text2: 'Reward point +5'
+            });
+            setReward(5)
+            setRefresh(!refresh)
           }
+
+          const exercisePlanCheckedCount = userPlanData.exercisePlan.filter(item => item.checked).length;
+          const mealPlanCheckedCount = userPlanData.mealPlan.filter(item => item.checked).length;
+
+          // สร้าง checkCount โดยรวมจากทั้ง exercisePlan และ mealPlan
+          const checkCount = exercisePlanCheckedCount + mealPlanCheckedCount;
+          userPlanData.checkedCount = checkCount;
         }
 
         // อัปเดตเอกสารใน Firestore
@@ -92,7 +117,7 @@ const QuestDairy = ({ navigation, weight }) => {
       } else {
         console.log("No such document!");
       }
-      console.log(data);
+      // console.log(data);
     } catch (err) {
       console.error("quest res err: ", err);
     }
@@ -106,7 +131,7 @@ const QuestDairy = ({ navigation, weight }) => {
   };
 
 
-  const requestPlan = async (userInfo, username) => {
+  const requestPlan = async (userInfo, username, weight) => {
     setLoading(true);
     try {
       const currentDate = new Date()
@@ -119,17 +144,20 @@ const QuestDairy = ({ navigation, weight }) => {
       if (data && data.status === "success") {
         // console.log("pull data success");
         setData(data.data);
-        console.log("MealPlan", data.data.mealPlan);
+        // console.log("Checked Count", data.data.checkedCount)
+        setProgress(data.data.checkedCount)
+        // console.log("MealPlan", data.data.mealPlan);
         const [mealPlanData, exercisePlanData] = await Promise.all([
           data?.data?.mealPlan,
           data?.data?.exercisePlan,
         ]);
-        console.log(mealPlanData.length + exercisePlanData.length);
+        // console.log(mealPlanData.length + exercisePlanData.length);
         const countIndex = mealPlanData.length + exercisePlanData.length;
-        console.log("Index", countIndex);
+        // console.log("Index", countIndex);
         setCountData(countIndex);
       } else {
         const res = await Gemini(userInfo, weight, username);
+        console.log("Gemini", weight)
         // console.log("quest: ", res && res.status);
 
         if (res && res.status === "success") {
@@ -137,6 +165,8 @@ const QuestDairy = ({ navigation, weight }) => {
           if (data && data.status === "success") {
             // console.log("pull data success");
             setData(data.data);
+            console.log("Data", data.mealPlan);
+            setRefresh(!refresh)
           }
         }
       }
@@ -147,6 +177,7 @@ const QuestDairy = ({ navigation, weight }) => {
     }
   };
 
+
   return (
     <>
       {loading ? (
@@ -156,6 +187,9 @@ const QuestDairy = ({ navigation, weight }) => {
       ) : (
         <>
           <ProgressDairy progress={progress} countDiary={countData} />
+          <ScrollView 
+          style={tw`w-full ml-15`}
+          >
           {data &&
             Object.entries(data).map(([key, value]) => {
               if (key === "exercisePlan" || key === "mealPlan") {
@@ -205,7 +239,7 @@ const QuestDairy = ({ navigation, weight }) => {
                         style={[
                           tw`p-3 rounded-md`,
                           {
-                            backgroundColor: checked[index]
+                            backgroundColor: checked[index] || item.checked
                               ? "#D9D9D9"
                               : "#00D49D",
                           },
@@ -213,10 +247,10 @@ const QuestDairy = ({ navigation, weight }) => {
                         onPress={() => {
                           handleChecked(key, index);
                         }}
-                        disabled={checked[index]}
+                        disabled={checked[index] || item.checked}
                       >
                         <Text style={tw`text-white font-bold `}>
-                          {checked[index] ? "Checked" : "Check"}
+                          {checked[index] || item.checked ? "Checked" : "Check"}
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -224,8 +258,11 @@ const QuestDairy = ({ navigation, weight }) => {
                   // }
                 });
               }
-            })}
+            })
+            }
+            </ScrollView>
         </>
+        
       )}
     </>
   );
