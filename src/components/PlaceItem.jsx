@@ -1,5 +1,5 @@
 import { View, Text, Image, Dimensions } from 'react-native'
-import React, {useContext} from 'react'
+import React, {useContext, useState} from 'react'
 import tw from "twrnc";
 import GlobalApi from '../utils/GlobalApi';
 import { FontAwesome } from '@expo/vector-icons';
@@ -11,7 +11,11 @@ const PlaceItem = ({ place }) => {
     const PLACE_PHOTO_BASE_URL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=";
     // console.log("Ref", place.photos[0].photo_reference);
     // console.log("Direction", place.geometry.location)
-    // const {selectedDirection, setSelectedDirection} = useContext(SelectDirectionContext);
+    const { direction, setDirection } = useContext(SelectDirectionContext)
+
+    const handleSelectDirection = () => {
+        setDirection(place.geometry.location)
+    }
 
     return (
         <View style={[tw`bg-white m-5 rounded-lg shadow-lg`, { width: Dimensions.get('screen').width*0.9}]}>
@@ -26,7 +30,7 @@ const PlaceItem = ({ place }) => {
                 <Text style={tw`font-bold text-base mb-2`}>{place.name}</Text>
                 <Text style={tw`text-sm text-gray-500`}>{place?.formatted_address}</Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleSelectDirection}>
             <FontAwesome 
                 name="location-arrow" 
                 size={24} color="white" 

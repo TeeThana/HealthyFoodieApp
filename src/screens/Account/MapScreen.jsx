@@ -8,6 +8,7 @@ import { UserLocationContext } from "../../contexts/UserLocationContext";
 import GlobalApi from "../../utils/GlobalApi";
 import PlaceListView from "../../components/PlaceListView";
 import { SelectMarkerContext } from "../../contexts/SelectMarkerContext";
+import { SelectDirectionContext } from "../../contexts/SelectDirectionContext";
 
 //Icons
 import {AntDesign} from "@expo/vector-icons";
@@ -18,6 +19,7 @@ const MapScreen = ({navigation, route}) => {
   const { location, setLocation } = useContext(UserLocationContext);
   const [placeList, setPlaceList] = useState()
   const [selectedMarker, setSelectedMarker] = useState([]);
+  const [direction, setDirection] = useState(null)
 
   useEffect(() => {
     location&&fetchPlaces(location?.coords?.latitude, location?.coords?.longitude);
@@ -29,7 +31,16 @@ const MapScreen = ({navigation, route}) => {
     console.log("URL", url)
     try {
       const response = await axios.get(url);
-      setPlaceList(response.data.results);
+      const filter = response.data.results.filter(place => {
+        console.log(place.geometry.location)
+      })
+      if (response.data.results.length === 0) {
+        console.log("No result");
+        // ตรงนี้คุณสามารถทำการแสดงข้อความ "No result" หรือดำเนินการต่อตามความต้องการ
+      } else {
+        setPlaceList(response.data.results);
+        // console.log(JSON.stringify(placeList))
+      }
     } catch (error) {
       console.error('Error fetching places: ', error);
     }
@@ -57,6 +68,7 @@ const MapScreen = ({navigation, route}) => {
   // }
   return (
     <SelectMarkerContext.Provider value={{selectedMarker, setSelectedMarker}}>
+    <SelectDirectionContext.Provider value={{direction, setDirection}}>
     <View>
       {/* <View style={tw`mt-15 absolute z-10 w-full px-5`}>
         <Searchbar searchedLocation={(location) => console.log(location)} />
@@ -74,6 +86,7 @@ const MapScreen = ({navigation, route}) => {
         {placeList && <PlaceListView placeList={placeList}/>}
       </View>
     </View>
+    </SelectDirectionContext.Provider>
     </SelectMarkerContext.Provider>
   )
 };

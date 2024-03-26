@@ -14,9 +14,13 @@ const ProgressBar = ({ progress, goal }) => {
   console.log("Percent", percent)
 
   useEffect(() => {
-    setLoading(true)
-    setPercent(progress)
-    setLoading(false)
+    
+    if (progress !== undefined || goal !== undefined) {
+      setLoading(true)
+      const countProgress = (progress/goal) * 100
+      setPercent(countProgress)
+      setLoading(false)
+    }
   }, [progress])
 //   useEffect(() => {
 //     const input = async () => {

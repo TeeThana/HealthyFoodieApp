@@ -17,7 +17,7 @@ import ProgressDairy from "../components/ProgressDairy";
 
 //Api
 import { Gemini, getData, getFirstDocName } from "../api/Gemini";
-import { getDoc, updateDoc, doc } from "firebase/firestore";
+import { getDoc, updateDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 //Icons
@@ -34,7 +34,6 @@ const QuestDairy = ({ navigation, weight }) => {
   const [progress, setProgress] = useState(0);
   const [countData, setCountData] = useState(1);
   const {refresh, setRefresh} = useContext(RefreshContext)
-  const [reward, setReward] = useState(0)
 
   useEffect(() => {
     const input = async () => {
@@ -53,9 +52,6 @@ const QuestDairy = ({ navigation, weight }) => {
     input();
   }, []);
 
-  useEffect(() => {
-    console.log("Get Reward",reward)
-  }, [reward])
 
   const handleMaps = (menu) => {
     navigation.navigate("Maps", { menu: menu });
@@ -97,9 +93,18 @@ const QuestDairy = ({ navigation, weight }) => {
             Toast.show({
               type: 'success',
               text1: 'Diary Program Success!!!',
-              text2: 'Reward point +5'
+              text2: 'Reward point +5',
+              visibilityTime: 5000
             });
-            setReward(5)
+            const userRewardsDocRef = doc(db, "UserRewards", username);
+            const userRewardsDocSnap = await getDoc(userRewardsDocRef)
+            if (userRewardsDocSnap.exists()) {
+              const userRewardData = userRewardsDocSnap.data().point + 5
+              await updateDoc(userRewardsDocRef, { point: userRewardData });
+            }
+            else{
+              await setDoc(userRewardsDocRef, { point: 5 })
+            }
             setRefresh(!refresh)
           }
 
@@ -187,6 +192,7 @@ const QuestDairy = ({ navigation, weight }) => {
       ) : (
         <>
           <ProgressDairy progress={progress} countDiary={countData} />
+          
           <ScrollView 
           style={tw`w-full ml-15`}
           >

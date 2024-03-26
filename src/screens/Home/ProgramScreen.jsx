@@ -32,13 +32,23 @@ const ProgramScreen = ({ navigation, route }) => {
   const [goalDay, setGoalDay] = useState(null);
 
   useEffect(() => {
+
     const fetchData = async () => {
       setLoading(true);
       await fetchPlan();
       setLoading(false);
     };
-  
-    fetchData();
+
+    const AfterfetchData = async () => {
+      await fetchPlan();
+    };
+
+    if(refresh === true) {
+      AfterfetchData()
+    }else {
+      fetchData();
+    }
+     
   }, [refresh]);
 
     const fetchPlan = async () => {
@@ -88,13 +98,8 @@ const ProgramScreen = ({ navigation, route }) => {
         //   console.log(doc.id)
         // })
         const count = data.size;
-        console.log("C",count)
-        if ( refresh === true) {
-          setProgress(count+1)
-          
-        }else {
+        // console.log("C",count)
           setProgress(count)
-        }
         // console.log("Data", data)
       }catch (err) {
         console.error("quest res err: ", err);
