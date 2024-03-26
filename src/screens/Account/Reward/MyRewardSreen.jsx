@@ -6,17 +6,101 @@ import tw from "twrnc";
 //icons
 import { AntDesign } from "@expo/vector-icons";
 
+//db
+import { db } from "../../../../firebaseConfig";
+import { getDoc, doc, setDoc, updateDoc } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const MyRewardSreen = ({ navigation }) => {
-  const [points, setPoints] = useState(100);
-  const [isUsed, setIsUsed] = useState({});
+  const [points, setPoints] = useState(0);
+  const [isUsed, setIsUsed] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [reward, setReward] = useState([]);
 
-  useEffect(() => {}, [points]);
-
-  const handleUse = (index) => {
+  const handleUse = async (index) => {
     setIsUsed((prevStatus) => ({
       ...prevStatus,
       [index]: true,
     }));
+
+    try {
+      const username = await AsyncStorage.getItem("username");
+      const docRef = doc(db, "UserRewards", username);
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists()) {
+        const rewardData = docSnapshot.data().reward;
+        rewardData[index].isUsed = true;
+
+        await updateDoc(docRef, {
+          reward: rewardData,
+        });
+      } else {
+        console.error("Document does not exist.");
+      }
+    } catch (error) {
+      console.error("Error updating isUsed status:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserPoint();
+    getMyReward();
+    const fetchIsUsedStatus = async () => {
+      try {
+        const username = await AsyncStorage.getItem("username");
+        const docRef = doc(db, "UserRewards", username);
+        const docSnapshot = await getDoc(docRef);
+
+        if (docSnapshot.exists()) {
+          const rewardData = docSnapshot.data().reward;
+          const newIsUsed = rewardData.map((reward) => reward.isUsed);
+          setIsUsed(newIsUsed);
+        } else {
+          console.error("Document does not exist.");
+        }
+      } catch (error) {
+        console.error("Error fetching isUsed status:", error);
+      }
+    };
+    fetchIsUsedStatus();
+  }, [points]);
+
+  const getUserPoint = async () => {
+    setLoading(true);
+    try {
+      const username = await AsyncStorage.getItem("username");
+      const docRef = doc(db, "UserRewards", username);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data().point;
+        console.log(data);
+        setPoints(data);
+      } else {
+        console.log("no doc");
+        setPoints(0);
+      }
+    } catch (err) {
+      console.error("get points error: ", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getMyReward = async () => {
+    setLoading(true);
+    try {
+      const username = await AsyncStorage.getItem("username");
+      const docRef = doc(db, "UserRewards", username);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data().reward;
+        setReward(data);
+        console.log("reward: ", data);
+      }
+    } catch (err) {
+      console.error("Get my reward error: ", err);
+    }
   };
 
   return (
@@ -53,19 +137,13 @@ const MyRewardSreen = ({ navigation }) => {
               ...tw`font-bold text-base text-center`,
             }}
           >
-            {points} Points
+            {loading ? 0 : points} Points
           </Text>
         </View>
       </View>
       <View style={{ ...tw`flex-1 h-full bg-[#F3EDF5]` }}>
         <FlatList
-          data={[
-            { key: "15% Food Discount", value: 99 },
-            { key: "20% Food Discount", value: 159 },
-            { key: "100 THB Gift Voucher", value: 89 },
-            { key: "300 THB Gift Voucher", value: 199 },
-            { key: "1,000 THB Gift Voucher", value: 799 },
-          ]}
+          data={reward}
           renderItem={({ item, index }) => (
             <View style={tw`bg-white rounded-xl m-2 py-3`}>
               <Text style={{ fontFamily: "inter-bold", ...tw`px-5 text-lg` }}>

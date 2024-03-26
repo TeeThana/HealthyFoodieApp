@@ -1,4 +1,11 @@
-import { View, Text, TouchableOpacity, FlatList, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  Alert,
+  RefreshControl,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import tw from "twrnc";
 import { LinearGradient } from "expo-linear-gradient";
@@ -6,14 +13,125 @@ import { LinearGradient } from "expo-linear-gradient";
 //icons
 import { AntDesign } from "@expo/vector-icons";
 
+//db
+import { db } from "../../../../firebaseConfig";
+import { getDoc, doc, setDoc, updateDoc } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const mockRewardData = [
+  { key: "15% Food Discount", value: 99 },
+  { key: "20% Food Discount", value: 159 },
+  { key: "100 THB Gift Voucher", value: 89 },
+  { key: "300 THB Gift Voucher", value: 199 },
+  { key: "1,000 THB Gift Voucher", value: 799 },
+];
+
 const RewardScreen = ({ navigation }) => {
   const [isClaim, setIsClaim] = useState({});
   const [canClaim, setCanClaim] = useState({});
   const [points, setPoints] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [reward, setReward] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {}, [points]);
+  useEffect(() => {
+    getUserPoint();
+    checkIsClaimedReward();
+  }, [points]);
 
-  const handleClaim = (index, value) => {
+  const handleRefresh = () => {
+    setRefreshing(true);
+    getUserPoint(); 
+    checkIsClaimedReward();
+    setRefreshing(false);
+  };
+
+  const getUserPoint = async () => {
+    setLoading(true);
+    try {
+      const username = await AsyncStorage.getItem("username");
+      const docRef = doc(db, "UserRewards", username);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data().point;
+        console.log(data);
+        setPoints(data);
+      } else {
+        console.log("no doc");
+        setPoints(0);
+      }
+    } catch (err) {
+      console.error("get points error: ", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const claimReward = async (key, value) => {
+    try {
+      console.log(key, value);
+      const username = await AsyncStorage.getItem("username");
+      const docRef = doc(db, "UserRewards", username);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const existingData = docSnap.data();
+        const updatePoint = existingData.point - value;
+        const updatedRewards = [
+          ...existingData.reward,
+          { key, value, isUsed: false },
+        ];
+        if (existingData.reward) {
+          await updateDoc(docRef, {
+            point: updatePoint,
+            reward: updatedRewards,
+          });
+        } else {
+          await setDoc(docRef, {
+            point: updatePoint,
+            reward: [
+              {
+                key: key,
+                value: value,
+                isUsed: false,
+              },
+            ],
+          });
+        }
+
+        console.log(`claim ${key} success`);
+      } else {
+        await setDoc(docRef, {
+          point: updatePoint,
+          reward: [
+            {
+              key: key,
+              value: value,
+            },
+          ],
+        });
+        console.log(`claim ${key} success`);
+      }
+    } catch (err) {
+      console.error("Claim reward error: ", err);
+    }
+  };
+
+  const checkIsClaimedReward = async () => {
+    try {
+      const username = await AsyncStorage.getItem("username");
+      const docRef = doc(db, "UserRewards", username);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data().reward;
+        setReward(data);
+      }
+    } catch (err) {
+      console.error("Check is claimed reward error: ", err);
+    }
+  };
+
+  const handleClaim = async (index, value, key) => {
     if (points < value) {
       setCanClaim((prevStatus) => ({
         ...prevStatus,
@@ -37,7 +155,15 @@ const RewardScreen = ({ navigation }) => {
         [index]: true,
       }));
       setPoints(points - value);
+      await claimReward(key, value);
+      checkIsClaimedReward();
     }
+  };
+
+  const isRewardClaimed = (key) => {
+    return (
+      reward && reward.length > 0 && reward.some((item) => item.key === key)
+    );
   };
 
   return (
@@ -74,7 +200,7 @@ const RewardScreen = ({ navigation }) => {
               ...tw`font-bold text-base text-center`,
             }}
           >
-            {points} Points
+            {loading ? 0 : points} Points
           </Text>
           <TouchableOpacity
             onPress={() => navigation.navigate("MyRewards")}
@@ -93,13 +219,10 @@ const RewardScreen = ({ navigation }) => {
       </View>
       <View style={{ ...tw`flex-1 h-full bg-[#F3EDF5]` }}>
         <FlatList
-          data={[
-            { key: "15% Food Discount", value: 99 },
-            { key: "20% Food Discount", value: 159 },
-            { key: "100 THB Gift Voucher", value: 89 },
-            { key: "300 THB Gift Voucher", value: 199 },
-            { key: "1,000 THB Gift Voucher", value: 799 },
-          ]}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+          data={mockRewardData}
           renderItem={({ item, index }) => (
             <View style={tw`bg-white rounded-xl m-2 py-3`}>
               <Text style={{ fontFamily: "inter-bold", ...tw`px-5 text-lg` }}>
@@ -131,10 +254,12 @@ const RewardScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={[
                     tw`p-2 rounded-xl mr-5`,
-                    canClaim[index] ? tw`bg-gray-400` : tw`bg-[#05D6A0]`,
+                    isRewardClaimed(item.key)
+                      ? tw`bg-gray-400`
+                      : tw`bg-[#05D6A0]`,
                   ]}
-                  onPress={() => handleClaim(index, item.value)}
-                  disabled={canClaim[index]}
+                  onPress={() => handleClaim(index, item.value, item.key)}
+                  disabled={isRewardClaimed(item.key)}
                 >
                   <Text
                     style={{
@@ -142,7 +267,7 @@ const RewardScreen = ({ navigation }) => {
                       ...tw`text-base text-white`,
                     }}
                   >
-                    {isClaim[index] ? "Claimed!" : "Claim"}
+                    {isRewardClaimed(item.key) ? "Claimed!" : "Claim"}
                   </Text>
                 </TouchableOpacity>
               </View>

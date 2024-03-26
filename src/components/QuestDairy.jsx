@@ -100,10 +100,10 @@ const QuestDairy = ({ navigation, weight }) => {
             const userRewardsDocSnap = await getDoc(userRewardsDocRef)
             if (userRewardsDocSnap.exists()) {
               const userRewardData = userRewardsDocSnap.data().point + 5
-              await updateDoc(userRewardsDocRef, { point: userRewardData });
+              await updateDoc(userRewardsDocRef, { ["point"]: userRewardData });
             }
             else{
-              await setDoc(userRewardsDocRef, { point: 5 })
+              await setDoc(userRewardsDocRef, { point: 5, reward: [] });
             }
             setRefresh(!refresh)
           }
