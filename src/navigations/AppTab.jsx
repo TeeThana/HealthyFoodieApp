@@ -7,6 +7,7 @@ import tw from "twrnc";
 //Screen
 import { AuthStack, HomeStack, AccountStack } from "./Stack";
 import CalendarScreen from "../screens/Calendar/CalendarScreen";
+import FriendsScreen from "../screens/Friends/FriendsScreen";
 
 //Component
 import Loading from "../components/Loading";
@@ -105,7 +106,7 @@ export const AppTab = ({ isPlan }) => {
               },
             }}
           />
-          {/* <Tab.Screen
+          <Tab.Screen
         name="Friends"
         component={FriendsScreen}
         options={{
@@ -136,7 +137,7 @@ export const AppTab = ({ isPlan }) => {
             );
           },
         }}
-      /> */}
+      />
           <Tab.Screen
             name="Account"
             component={AccountStack}
