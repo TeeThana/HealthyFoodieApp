@@ -12,19 +12,13 @@ import {
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const CreateUser = (user, pass) => {
+export const CreateUser = async (user, pass) => {
   try {
-    createUserWithEmailAndPassword(auth, user, pass);
+    await createUserWithEmailAndPassword(auth, user, pass);
     console.log("User account created & signed in!");
+    return { status: true, message: "success" };
   } catch (e) {
-    if (e.code === "auth/email-already-in-use") {
-      console.log("That email address is already in use!");
-      return { status: false, message: e.code };
-    } else if (e.code === "auth/invalid-email") {
-      console.log("That email address is invalid!");
-    } else {
-      console.error("CreateUserError: " + e.message);
-    }
+    return { status: false, message: e.code };
   }
 };
 

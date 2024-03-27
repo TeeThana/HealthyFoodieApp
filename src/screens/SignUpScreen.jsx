@@ -11,7 +11,7 @@ import {
   Text,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import tw from "twrnc"
+import tw from "twrnc";
 
 //Icon
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -26,8 +26,7 @@ const SignUpScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
-  const [usernameError, setUsernameError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const backAction = () => {
@@ -43,19 +42,28 @@ const SignUpScreen = ({ navigation }) => {
     return () => backHandler.remove();
   }, [navigation]);
 
-  const handleSignUp = (user, pass) => {
+  const handleSignUp = async (user, pass) => {
     try {
       if (pass === password && pass === confirmPass) {
-        CreateUser(user, pass);
-        setTimeout(() => {
-          navigation.navigate("SignIn");
-        }, 3000);
+        const check = await CreateUser(user, pass);
+        console.log(check);
+        if (check.status === false) {
+          if (check.message) {
+            setError(check.message);
+          }
+        } else {
+          console.log("User sign in successful");
+          setError(null);
+          setTimeout(() => {
+            navigation.navigate("SignIn");
+          }, 3000);
+        }
       } else if (pass != confirmPass) {
         alert("Passwords do not match");
       }
     } catch (e) {
       console.error("SignUp failed: ", e.message);
-    }
+    } 
   };
 
   return (
@@ -160,6 +168,19 @@ const SignUpScreen = ({ navigation }) => {
             secureTextEntry
           />
         </View>
+        {error && (
+          <View style={tw`flex items-end w-full`}>
+            <Text
+              style={{
+                fontFamily: "inter-medium",
+                marginRight: "15%",
+                ...tw`text-red-500 text-sm mt-5 `,
+              }}
+            >
+              {error}
+            </Text>
+          </View>
+        )}
         <TouchableOpacity
           style={styles.signUpButton}
           onPress={() => handleSignUp(username, password)}
