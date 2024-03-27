@@ -170,7 +170,7 @@ const QuestDairy = ({ navigation, weight }) => {
           if (data && data.status === "success") {
             // console.log("pull data success");
             setData(data.data);
-            console.log("Data", data.mealPlan);
+            console.log("data raw", data.data)
             setRefresh(!refresh)
           }
         }

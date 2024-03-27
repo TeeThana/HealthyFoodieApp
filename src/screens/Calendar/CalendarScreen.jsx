@@ -221,6 +221,13 @@ const CalenderScreen = () => {
             />
           )}
           {console.log("selectDate: ", selectedDate)}
+          {/* <View style={tw`absolute z-10 bg-red-500 justify-center`}>
+          <TouchableOpacity>
+          <Text >
+            GGGGGGGGG
+          </Text>
+          </TouchableOpacity>
+          </View> */}
         </View>
       </View>
     </LinearGradient>

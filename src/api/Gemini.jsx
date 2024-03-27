@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, } from "react";
 import {
   View,
   Text,
@@ -155,7 +155,12 @@ export const Gemini = async (userInfo, weight, username) => {
           }
         }
       } else {
-        console.error("Invalid JSON format:", response);
+        if (retryCount > 0) {
+          return await Gemini(userInfo, weight, username, retryCount - 1);
+        } else {
+          console.error("Retry limit exceeded");
+          return { status: "fail" };
+        }
       }
     } else {
       return await getData(username, currentDate);

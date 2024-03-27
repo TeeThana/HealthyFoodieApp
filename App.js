@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
-import { Text, View } from "react-native";
+import { Text, View, KeyboardAvoidingView } from "react-native";
 import AuthSwitch from "./src/navigations/AuthSwitch";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import tw from "twrnc"
+import tw from "twrnc";
 import AuthClerk from "./src/Clerk/AuthClerk";
 import Toast from "react-native-toast-message";
 
@@ -11,7 +11,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
-    "inter": require("./assets/fonts/Inter-Regular.ttf"),
+    inter: require("./assets/fonts/Inter-Regular.ttf"),
     "inter-medium": require("./assets/fonts/Inter-Medium.ttf"),
     "inter-bold": require("./assets/fonts/Inter-Bold.ttf"),
     "inter-black": require("./assets/fonts/Inter-Black.ttf"),
@@ -45,5 +45,3 @@ export default function App() {
     </View>
   );
 }
-
-

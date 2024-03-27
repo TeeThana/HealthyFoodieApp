@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import React, { useContext } from 'react'
 import { Marker } from 'react-native-maps'
 import tw from "twrnc";
@@ -6,6 +6,9 @@ import tw from "twrnc";
 import { SelectMarkerContext } from '../contexts/SelectMarkerContext';
 //Icons
 import { Ionicons } from '@expo/vector-icons';
+
+//Images
+
 
 
 const Markers = ({index, place}) => {
@@ -20,7 +23,8 @@ const Markers = ({index, place}) => {
               }}
               onPress={() => {setSelectedMarker(index)}}
       >
-        <Ionicons name="restaurant" size={24} color="white" style={tw`bg-green-500 rounded-lg p-1 mb-3`}  />
+        {/* <Ionicons name="restaurant" size={24} color="white" style={tw`bg-green-500 rounded-lg p-1 mb-3`}  /> */}
+        <Image style={tw`w-10 h-12`} source={require('../../assets/location_res.png')}/>
       </Marker>
   )
 }

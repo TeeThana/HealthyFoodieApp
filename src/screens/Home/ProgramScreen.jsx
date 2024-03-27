@@ -30,10 +30,11 @@ const ProgramScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [goalDay, setGoalDay] = useState(null);
-
+  console.log(goalDay);
   useEffect(() => {
 
     const fetchData = async () => {
+      console.log("Fetching data...");
       setLoading(true);
       await fetchPlan();
       setLoading(false);
@@ -43,16 +44,16 @@ const ProgramScreen = ({ navigation, route }) => {
       await fetchPlan();
     };
 
-    if(refresh === true) {
+    if(refresh === !refresh) {
       AfterfetchData()
-    }else {
+    }
+    else {
       fetchData();
     }
-     
   }, [refresh]);
 
     const fetchPlan = async () => {
-      
+      console.log("fetching plan...");
       try {
         const username = await AsyncStorage.getItem("username");
         const docRef = doc(db, "UserPlan", username);
@@ -89,6 +90,7 @@ const ProgramScreen = ({ navigation, route }) => {
     };
 
     const fetchProgress = async() => {
+      console.log("fetchProgress")
       const username = await AsyncStorage.getItem("username");
       try {
         const userPlanDocRef = collection(db, "UserPlan", username, "plan");
@@ -101,6 +103,7 @@ const ProgramScreen = ({ navigation, route }) => {
         // console.log("C",count)
           setProgress(count)
         // console.log("Data", data)
+        // setRefresh(!refresh)
       }catch (err) {
         console.error("quest res err: ", err);
       }
@@ -130,7 +133,7 @@ const ProgramScreen = ({ navigation, route }) => {
         <View style={tw`items-center `}>
           {!loading ? (
             <>
-              {weight && <ProgressBar progress={progress} goal={goalDay} />}
+              {goalDay && <ProgressBar progress={progress} goal={goalDay} />}
               <View style={tw`bg-gray-100 w-full h-full mt-20 items-center`}>
                 <View
                   style={tw`bg-green-100 w-5/6 h-4/7 mt-20 shadow-md items-center`}
