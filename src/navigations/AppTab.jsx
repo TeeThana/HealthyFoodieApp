@@ -34,13 +34,12 @@ export const AppTab = ({ isPlan }) => {
     }, 3500);
   }, []);
 
-
   return (
     <>
       {loading ? (
         <Loading />
       ) : (
-        <Tab.Navigator screenOptions={screenOptions} initialRouteName="Home" >
+        <Tab.Navigator screenOptions={screenOptions} initialRouteName="Home">
           <Tab.Screen
             name="Home"
             options={{
@@ -106,38 +105,38 @@ export const AppTab = ({ isPlan }) => {
               },
             }}
           />
-          <Tab.Screen
-        name="Friends"
-        component={FriendsScreen}
-        options={{
-          tabBarIcon: ({ focused }) => {
-            return (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <FontAwesome5
-                  name="user-friends"
-                  size={24}
-                  color={focused ? "#313047" : "#E3E3E3"}
-                />
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: focused ? "#313047" : "#E3E3E3",
-                    marginTop: 5,
-                  }}
-                >
-                  Friends
-                </Text>
-              </View>
-            );
-          },
-        }}
-      />
+          {/* <Tab.Screen
+            name="Friends"
+            component={FriendsScreen}
+            options={{
+              tabBarIcon: ({ focused }) => {
+                return (
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <FontAwesome5
+                      name="user-friends"
+                      size={24}
+                      color={focused ? "#313047" : "#E3E3E3"}
+                    />
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: focused ? "#313047" : "#E3E3E3",
+                        marginTop: 5,
+                      }}
+                    >
+                      Friends
+                    </Text>
+                  </View>
+                );
+              },
+            }}
+          /> */}
           <Tab.Screen
             name="Account"
             component={AccountStack}
