@@ -40,7 +40,7 @@ export const AppTab = ({ isPlan }) => {
       {loading ? (
         <Loading />
       ) : (
-        <Tab.Navigator screenOptions={screenOptions} initialRouteName="Home">
+        <Tab.Navigator screenOptions={screenOptions} initialRouteName="Home" >
           <Tab.Screen
             name="Home"
             options={{

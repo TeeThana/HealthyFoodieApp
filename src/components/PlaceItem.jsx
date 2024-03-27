@@ -25,8 +25,8 @@ const PlaceItem = ({ place }) => {
                         uri: PLACE_PHOTO_BASE_URL + place.photos[0].photo_reference + "&key=" + GlobalApi.API_KEY
                     }
                     : require('../../assets/splash.png')}
-                style={tw`w-full h-50 rounded-lg z-10`} />
-            <View style={tw`p-5`}>
+                style={tw`w-full h-40 rounded-lg z-10`} />
+            <View style={tw`p-3`}>
                 <Text style={tw`font-bold text-base mb-2`}>{place.name}</Text>
                 <Text style={tw`text-sm text-gray-500`}>{place?.formatted_address}</Text>
             </View>

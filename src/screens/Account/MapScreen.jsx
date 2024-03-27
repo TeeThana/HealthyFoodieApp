@@ -14,14 +14,27 @@ import { SelectDirectionContext } from "../../contexts/SelectDirectionContext";
 import {AntDesign} from "@expo/vector-icons";
 
 const MapScreen = ({navigation, route}) => {
+  const FilterMenu = route.params.menu.split(/[\s,]+/)
+  const Filter = FilterMenu[0]
   console.log("Menu",route.params.menu)
-  const [ filter, setFilter] = useState(route.params.menu)
+  const [ filter, setFilter] = useState(Filter);
+  console.log("Filter", filter)
   const { location, setLocation } = useContext(UserLocationContext);
   const [placeList, setPlaceList] = useState()
   const [selectedMarker, setSelectedMarker] = useState([]);
   const [direction, setDirection] = useState(null)
 
-  useEffect(() => {
+  useEffect( () => {
+    // const FilterMenu = async () => {
+    // if (route.params.menu.includes(" " || ",")) {
+    //   const menu = await route.params.menu.split(" " || ",");
+    //   setFilter(menu[0]);
+    // } else {
+    //   setFilter(route.params.menu);
+    // }
+    // console.log("filter", filter)
+    // }
+    // FilterMenu()
     location&&fetchPlaces(location?.coords?.latitude, location?.coords?.longitude);
   },[location])
 
@@ -31,7 +44,7 @@ const MapScreen = ({navigation, route}) => {
     console.log("URL", url)
     try {
       const response = await axios.get(url);
-      const filter = response.data.results.filter(place => {
+      const filterPlace = response.data.results.filter(place => {
         console.log(place.geometry.location)
       })
       if (response.data.results.length === 0) {

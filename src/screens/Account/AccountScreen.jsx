@@ -121,14 +121,19 @@ const AccountScreen = ({ navigation }) => {
                       Log out of your account?
                     </Text>
                   </View>
-                  <View>
-                    <Button title="Logout" color={"#FF005D"} onPress={Logout} />
-                    <Button
-                      title="Cancel"
-                      onPress={() => {
+                  <View style={tw`mx-15 `}>
+                    <TouchableOpacity onPress={Logout} style={tw`items-center bg-red-500 rounded-md py-3 my-3`}>
+                      <Text style={tw`uppercase text-white font-bold`}>
+                        logout
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
                         setIsModalVisible(false);
-                      }}
-                    />
+                      }} style={tw`items-center bg-blue-500 rounded-md py-3`}>
+                      <Text style={tw`uppercase text-white font-bold`}>
+                        cancel
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>

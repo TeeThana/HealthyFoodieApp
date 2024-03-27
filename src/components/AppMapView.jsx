@@ -64,7 +64,7 @@ const AppMapView = ({placeList}) => {
               destination={destination}
               apikey={GlobalApi.API_KEY}
               strokeWidth={5}
-              strokeColor="#00D49D"
+              strokeColor="#FF005D"
               
             />}
             {placeList && placeList.map((item, index) => (
