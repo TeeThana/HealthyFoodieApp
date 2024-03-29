@@ -8,7 +8,7 @@ import { AntDesign } from "@expo/vector-icons";
 
 //db
 import { db } from "../../../../firebaseConfig";
-import { getDoc, doc, setDoc, updateDoc } from "firebase/firestore";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const MyRewardSreen = ({ navigation }) => {

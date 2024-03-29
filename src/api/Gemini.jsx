@@ -1,16 +1,3 @@
-import React, { useState, useEffect, } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  KeyboardAvoidingView,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
-import moment from "moment";
-
 //AI
 import {
   GoogleGenerativeAI,
@@ -19,29 +6,11 @@ import {
 } from "@google/generative-ai";
 
 //Prompts
-import {
-  all_prompt,
-  clear,
-  refresh_menu,
-  refresh_exercise,
-  refresh_all,
-  continue_prompt,
-  whoareyou,
-} from "./AIPrompt";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { all_prompt } from "./AIPrompt";
 
 //db
 import { db } from "../../firebaseConfig";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  addDoc,
-  updateDoc,
-  collection,
-  query,
-  where,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc, collection } from "firebase/firestore";
 
 const MODEL_NAME = "gemini-1.0-pro";
 const API_KEY = "AIzaSyC70laM8ltR-_XkLOnd4oMdxuUoIJ5Q7BQ";
@@ -76,11 +45,13 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
 export const Gemini = async (userInfo, weight, username) => {
+  const strUserInfo = JSON.stringify(userInfo);
   const parts = [
     {
-      text: `${all_prompt} เคสที่ให้ช่วย ${userInfo} น้ำหนักเป้าหมาย ${weight} เช็ค allergy ให้ดีๆ เพราะผู้ใช้อาจเป็นอันตรายได้`,
+      text: `${all_prompt} เคสที่ให้ช่วย ${strUserInfo} น้ำหนักเป้าหมาย ${weight} ห้ามแนะนำอาหารที่มีในรายการ allergy ของเคสที่ให้ช่วยเด็ดขาดเพราะอาจเป็นอันตรยกับผู้ใช้ได้`,
     },
   ];
+  console.log("part: ", strUserInfo, "type: ", typeof(strUserInfo));
 
   const retryCount = 5;
 
@@ -223,7 +194,7 @@ const storeToDB = async (username, jsonResponse, weight, currentDate) => {
         mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
         exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],
         checkedAll: false,
-        checkedCount: 0
+        checkedCount: 0,
       });
     } else {
       const check = await getDoc(docRef);
@@ -240,7 +211,7 @@ const storeToDB = async (username, jsonResponse, weight, currentDate) => {
         mealPlan: jsonResponse["ตารางการรับประทานอาหาร"],
         exercisePlan: jsonResponse["ตารางการออกกำลังกาย"],
         checkedAll: false,
-        checkedCount: 0
+        checkedCount: 0,
       });
     }
 

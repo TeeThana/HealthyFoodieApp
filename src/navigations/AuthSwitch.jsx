@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
-import tw from "twrnc";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 
@@ -12,14 +10,7 @@ import { AppTab } from "./AppTab";
 import FirstInfoScreen from "../screens/FirstInfoScreen";
 
 //Firebase
-import {
-  doc,
-  getDoc,
-  getDocs,
-  collection,
-  query,
-  where,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -48,7 +39,7 @@ const AuthSwitch = () => {
         setUser(null);
       }
     });
-    
+
     const getLocationAndPermissions = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -62,8 +53,6 @@ const AuthSwitch = () => {
     };
 
     getLocationAndPermissions();
-
-    
   }, []);
 
   let text = "Waiting..";

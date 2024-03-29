@@ -3,11 +3,9 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  Image,
   Dimensions,
   BackHandler,
   TextInput,
-  Button,
   Text,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,7 +15,7 @@ import tw from "twrnc";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 //api
-import { GoogleAuth, CreateUser } from "../api/Authentication";
+import { CreateUser } from "../api/Authentication";
 
 const windowWidth = Dimensions.get("window").width;
 const fontSize = windowWidth * 0.2;
@@ -63,7 +61,7 @@ const SignUpScreen = ({ navigation }) => {
       }
     } catch (e) {
       console.error("SignUp failed: ", e.message);
-    } 
+    }
   };
 
   return (

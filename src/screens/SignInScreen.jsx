@@ -1,16 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
   TouchableOpacity,
-  Image,
   Dimensions,
   TextInput,
-  Button,
   Text,
   Modal,
-  Animated,
-  PanResponder,
 } from "react-native";
 import GestureRecognizer from "react-native-swipe-gestures";
 import { LinearGradient } from "expo-linear-gradient";

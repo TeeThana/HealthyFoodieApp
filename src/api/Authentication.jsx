@@ -2,13 +2,8 @@ import { auth } from "../../firebaseConfig";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithCredential,
   signOut,
-  getIdToken,
   sendPasswordResetEmail,
-  updatePassword,
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 

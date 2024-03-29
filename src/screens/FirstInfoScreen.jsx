@@ -4,9 +4,7 @@ import {
   View,
   TouchableOpacity,
   Text,
-  BackHandler,
   ScrollView,
-  Pressable,
   Platform,
   TextInput,
 } from "react-native";
@@ -17,21 +15,11 @@ import tw from "twrnc";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //Firestore
-import {
-  doc,
-  setDoc,
-  addDoc,
-  collection,
-  collectionGroup,
-} from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 //icons
-import {
-  FontAwesome,
-  MaterialCommunityIcons,
-  AntDesign,
-} from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 //Component
 import Loading from "../components/Loading";
@@ -50,7 +38,6 @@ const FirstInfoScreen = ({ onSuccess }) => {
       year: "numeric",
     }),
   });
-
 
   const [userName, setUserName] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
@@ -100,8 +87,6 @@ const FirstInfoScreen = ({ onSuccess }) => {
   };
 
   const handleGenerate = async (userData) => {
-    // console.log("Username:", userName);
-    // console.log("Generate:", userData);
     try {
       await setDoc(doc(db, "UserInfo", userName), {
         firstName: userData.firstName,
@@ -130,7 +115,6 @@ const FirstInfoScreen = ({ onSuccess }) => {
   };
 
   const [date, setDate] = useState(new Date());
-  // const [selectedDate, setSelectedDate] = useState();
   const [showDate, setShowDate] = useState(false);
   const [dateText, setDateText] = useState(
     new Date().toLocaleDateString("en-GB", {
@@ -156,8 +140,6 @@ const FirstInfoScreen = ({ onSuccess }) => {
       dateOfBirth: fDate,
     }));
     setDateText(fDate);
-    // console.log(fDate);
-    // console.log(userData);
   };
 
   const showMode = () => {
@@ -185,9 +167,6 @@ const FirstInfoScreen = ({ onSuccess }) => {
                 marginBottom: "15%",
               }}
             >
-              {/* <View style={styles.profileContainer}>
-            <View style={styles.profile}></View>
-          </View> */}
               <View style={tw`bg-white rounded-xl mt-5 mx-5 py-5`}>
                 <View style={tw`mx-5 mt-5`}>
                   <Text style={{ fontFamily: "inter-bold", ...tw`uppercase` }}>

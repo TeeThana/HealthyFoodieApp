@@ -1,13 +1,13 @@
 import React, { useCallback } from "react";
-import { Text, View, KeyboardAvoidingView } from "react-native";
+import { View, LogBox } from "react-native";
 import AuthSwitch from "./src/navigations/AuthSwitch";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import tw from "twrnc";
-import AuthClerk from "./src/Clerk/AuthClerk";
 import Toast from "react-native-toast-message";
 
 SplashScreen.preventAutoHideAsync();
+LogBox.ignoreAllLogs();
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
@@ -30,18 +30,17 @@ export default function App() {
   return (
     <View onLayout={onLayoutRootView} style={tw`flex-1`}>
       <AuthSwitch />
-      <Toast 
-      text1Style={{
-        fontSize: 20,
-        fontWeight: '400'
-      }}
-      text2Style={{
-        fontSize: 15,
-        fontWeight: '300'
-      }}
-      visibilityTime = {5000}
+      <Toast
+        text1Style={{
+          fontSize: 20,
+          fontWeight: "400",
+        }}
+        text2Style={{
+          fontSize: 15,
+          fontWeight: "300",
+        }}
+        visibilityTime={5000}
       />
-      {/* <AuthClerk /> */}
     </View>
   );
 }

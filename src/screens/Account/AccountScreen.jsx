@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  Modal,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
@@ -117,19 +110,30 @@ const AccountScreen = ({ navigation }) => {
               >
                 <View style={tw`h-1/4 w-full bg-white`}>
                   <View style={tw`items-center`}>
-                    <Text style={{fontFamily: "inter-bold", ...tw`mt-10 mb-5 font-bold text-base`}}>
+                    <Text
+                      style={{
+                        fontFamily: "inter-bold",
+                        ...tw`mt-10 mb-5 font-bold text-base`,
+                      }}
+                    >
                       Log out of your account?
                     </Text>
                   </View>
                   <View style={tw`mx-15 `}>
-                    <TouchableOpacity onPress={Logout} style={tw`items-center bg-red-500 rounded-md py-3 my-3`}>
+                    <TouchableOpacity
+                      onPress={Logout}
+                      style={tw`items-center bg-red-500 rounded-md py-3 my-3`}
+                    >
                       <Text style={tw`uppercase text-white font-bold`}>
                         logout
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {
+                    <TouchableOpacity
+                      onPress={() => {
                         setIsModalVisible(false);
-                      }} style={tw`items-center bg-blue-500 rounded-md py-3`}>
+                      }}
+                      style={tw`items-center bg-blue-500 rounded-md py-3`}
+                    >
                       <Text style={tw`uppercase text-white font-bold`}>
                         cancel
                       </Text>

@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Calendar, LocaleConfig, Agenda } from "react-native-calendars";
+import { Calendar, Agenda } from "react-native-calendars";
 import { LinearGradient } from "expo-linear-gradient";
-import { addDays, addMonths } from "date-fns";
 import tw from "twrnc";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //db
 import { db } from "../../../firebaseConfig";
-import {
-  getDoc,
-  getDocs,
-  doc,
-  collection,
-  listCollections,
-  query,
-} from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore";
 
 const CalenderScreen = () => {
   const [press, setPress] = useState(false);

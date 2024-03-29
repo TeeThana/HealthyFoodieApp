@@ -4,12 +4,10 @@ import {
   View,
   TouchableOpacity,
   Text,
-  BackHandler,
   ScrollView,
-  Pressable,
   Platform,
   TextInput,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
@@ -19,22 +17,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
 
 //Firestore
-import {
-  doc,
-  setDoc,
-  getDoc,
-  addDoc,
-  collection,
-  collectionGroup,
-} from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 //icons
-import {
-  FontAwesome,
-  MaterialCommunityIcons,
-  AntDesign,
-} from "@expo/vector-icons";
+import { FontAwesome, AntDesign } from "@expo/vector-icons";
 
 const InfoScreen = ({ navigation }) => {
   const [userData, setUserData] = useState({
@@ -47,7 +34,7 @@ const InfoScreen = ({ navigation }) => {
     dateOfBirth: "",
     fullDate: "",
   });
-  console.log(userData)
+  console.log(userData);
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
@@ -125,7 +112,7 @@ const InfoScreen = ({ navigation }) => {
         weight: userData.weight,
         allergy: userData.allergy,
       });
-      navigation.goBack()
+      navigation.goBack();
       console.log("Added Info Successfully");
     } catch (err) {
       console.error("Generate Error!", err.message);

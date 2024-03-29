@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+
 import { createStackNavigator } from "@react-navigation/stack";
 
 //Screen
@@ -15,7 +14,6 @@ import DecreaseWeight from "../screens/Home/DecreaseWeight";
 import ProgramScreen from "../screens/Home/ProgramScreen";
 import RewardScreen from "../screens/Account/Reward/RewardScreen";
 import MyRewardSreen from "../screens/Account/Reward/MyRewardSreen";
-
 
 //Components
 import Loading from "../components/Loading";
@@ -69,11 +67,9 @@ export const AccountStack = () => {
       screenOptions={{ headerShown: false }}
     >
       <Account.Screen name="AccountMain" component={AccountScreen} />
-      {/* <Account.Screen name="Profile" component={ProfileScreen} /> */}
       <Account.Screen name="Information" component={InfoScreen} />
       <Account.Screen name="Rewards" component={RewardScreen} />
       <Account.Screen name="MyRewards" component={MyRewardSreen} />
-      {/* <Account.Screen name="Maps" component={MapScreen} /> */}
     </Account.Navigator>
   );
 };

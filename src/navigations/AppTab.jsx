@@ -1,14 +1,10 @@
 import { View, Text } from "react-native";
 import React, { useState, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import tw from "twrnc";
 
 //Screen
-import { AuthStack, HomeStack, AccountStack } from "./Stack";
+import { HomeStack, AccountStack } from "./Stack";
 import CalendarScreen from "../screens/Calendar/CalendarScreen";
-import FriendsScreen from "../screens/Friends/FriendsScreen";
-
 //Component
 import Loading from "../components/Loading";
 
