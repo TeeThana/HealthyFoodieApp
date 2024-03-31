@@ -2,7 +2,7 @@
   "expo": {
     "name": "HealthyFoodie",
     "slug": "HealthyFoodie",
-    "scheme": "HealthyFoodie",
+    "scheme": "healthyfoodie",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +21,19 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kilrios.healthyfoodieapp"
+      "package": "com.kilrios.healthyfoodieapp",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b6d5d2eb-f6c2-4bba-a40c-77d9cf3e5180"
+      }
     },
     "plugins": [
       [
