@@ -53,6 +53,7 @@ const InfoScreen = ({ navigation }) => {
             ...prevData,
             ...data,
           }));
+          setSelectedGender(data.gender)
           setDate(new Date(data.fullDate));
           setDateText(data.dateOfBirth);
         } else {
@@ -88,6 +89,7 @@ const InfoScreen = ({ navigation }) => {
         allergy: [...prevUserData.allergy, allergyInput],
       }));
       setAllergyInput("");
+      setHasChanges(true);
     }
   };
 
@@ -143,13 +145,7 @@ const InfoScreen = ({ navigation }) => {
   const [dateText, setDateText] = useState("DD/MM/YYYY");
 
   const ChangeDate = (event, selectedDate) => {
-    if (selectedDate !== userData.fullDate) {
-      setHasChanges(true);
-    } else {
-      setHasChanges(false);
-    }
-    // console.log("Selected", selectedDate);
-    const currentDate = selectedDate || date;
+    const currentDate = selectedDate;
     setShowDate(Platform.OS === "ios");
     setDate(currentDate);
     // console.log("Current", currentDate);
@@ -162,6 +158,13 @@ const InfoScreen = ({ navigation }) => {
       dateOfBirth: fDate,
     }));
     setDateText(fDate);
+    if (fDate !== userData.dateOfBirth) {
+      setHasChanges(true);
+    } else {
+      setHasChanges(false);
+    }
+    // console.log("Selected", selectedDate);
+    
     // console.log(fDate);
     // console.log(userData);
   };
@@ -233,7 +236,6 @@ const InfoScreen = ({ navigation }) => {
                     onValueChange={(itemValue, itemIndex) =>
                       handleGenderSelect(itemValue)
                     }
-                    value={userData.gender}
                   >
                     <Picker.Item label="Male" value="male" />
                     <Picker.Item label="Female" value="female" />

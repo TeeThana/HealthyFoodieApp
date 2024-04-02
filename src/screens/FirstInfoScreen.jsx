@@ -13,6 +13,7 @@ import { Picker } from "@react-native-picker/picker";
 import DatePicker from "@react-native-community/datetimepicker";
 import tw from "twrnc";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import moment from "moment";
 
 //Firestore
 import { doc, setDoc } from "firebase/firestore";
@@ -32,15 +33,12 @@ const FirstInfoScreen = ({ onSuccess }) => {
     height: "",
     weight: "",
     allergy: [],
-    dateOfBirth: new Date().toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }),
+    dateOfBirth: "",
+    fullDate: "",
   });
 
   const [userName, setUserName] = useState(null);
-  const [hasChanges, setHasChanges] = useState(false);
+  // const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -92,6 +90,7 @@ const FirstInfoScreen = ({ onSuccess }) => {
         firstName: userData.firstName,
         lastName: userData.lastName,
         dateOfBirth: userData.dateOfBirth,
+        fullDate: userData.fullDate,
         gender: userData.gender,
         height: userData.height,
         weight: userData.weight,
@@ -116,30 +115,24 @@ const FirstInfoScreen = ({ onSuccess }) => {
 
   const [date, setDate] = useState(new Date());
   const [showDate, setShowDate] = useState(false);
-  const [dateText, setDateText] = useState(
-    new Date().toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    })
-  );
+  const [dateText, setDateText] = useState("DD/MM/YYYY");
 
   const ChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowDate(Platform.OS === "ios");
     setDate(currentDate);
+    // console.log("Current", currentDate);
     let tempDate = new Date(currentDate);
-    let fDate =
-      tempDate.getDate() +
-      "/" +
-      (tempDate.getMonth() + 1) +
-      "/" +
-      tempDate.getFullYear();
+    let fDate = moment(tempDate).format("DD/MM/YYYY");
+    console.log("fDate", fDate);
     setUserData((prevUserData) => ({
       ...prevUserData,
+      fullDate: tempDate.toString(),
       dateOfBirth: fDate,
     }));
     setDateText(fDate);
+    // console.log(fDate);
+    // console.log(userData);
   };
 
   const showMode = () => {
@@ -234,7 +227,7 @@ const FirstInfoScreen = ({ onSuccess }) => {
                       <DatePicker
                         value={date}
                         mode="date"
-                        format="YYYY-MM-DD"
+                        format="DD/MM/YYYY"
                         onChange={ChangeDate}
                       />
                     )}

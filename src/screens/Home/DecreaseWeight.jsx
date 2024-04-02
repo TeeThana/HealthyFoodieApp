@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Text,
+  Alert
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -14,7 +15,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 
-const DecreaseWeight = ({ navigation }) => {
+const DecreaseWeight = ({ navigation, route }) => {
+  const userWeight = route.params.weight
   const [weightGoal, setWeightGoal] = useState("");
 
   const handleWeightChange = (text) => {
@@ -22,8 +24,18 @@ const DecreaseWeight = ({ navigation }) => {
   };
 
   const handleSaveWeight = () => {
-    console.log("Weight:", weightGoal);
-    navigation.navigate("Program", { weightGoal: weightGoal });
+    if (weightGoal < userWeight) {
+      navigation.navigate("Program", { weightGoal: weightGoal });
+    } else {
+      // เพิ่มโค้ดที่ต้องการให้ทำงานเมื่อ weightGoal <= userWeight
+      console.log("Weight goal must be greater than user weight.");
+      // ตัวอย่างเช่นการแสดง Alert
+      Alert.alert(
+        "Invalid Weight Goal",
+        "Weight goal must be less than user weight.",
+        [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+      );
+    }
   };
 
   const backHandler = () => {

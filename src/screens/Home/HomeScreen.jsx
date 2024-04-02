@@ -1,16 +1,43 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import tw from "twrnc";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
+
+
 const HomeScreen = ({ navigation }) => {
+  const [userWeight, setUserWeight] = useState("");
 
   const handleIncrease = () => {
-    navigation.navigate("Increase");
+    navigation.navigate("Increase", { weight : userWeight });
   };
 
   const handleDecrease = () => {
-    navigation.navigate("Decrease");
+    navigation.navigate("Decrease", { weight : userWeight });
   };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const username = await AsyncStorage.getItem("username");
+      try {
+        const documentRef = doc(db, "UserInfo", username);
+        const documentSnapshot = await getDoc(documentRef);
+        if (documentSnapshot.exists()) {
+          // console.log(documentSnapshot.data());
+          const weight = documentSnapshot.data().weight;
+          console.log("Increase", weight)
+          setUserWeight(weight)
+        } else {
+          console.log("Document does not exist!");
+        }
+      } catch (error) {
+        console.error("Error fetching document:", error);
+      }
+    };
+    fetchUserData();
+  }, []);
 
   return (
     <View style={tw`flex-1 justify-center items-center`}>
