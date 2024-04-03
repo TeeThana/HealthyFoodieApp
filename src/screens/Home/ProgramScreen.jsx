@@ -123,17 +123,15 @@ const ProgramScreen = ({ navigation, route }) => {
           style={tw`flex-1`}
         >
           <View style={tw`items-center mt-15 mb-5`}>
-            <TouchableOpacity>
               <Text style={{ fontFamily: "inter-bold", ...tw`text-2xl ` }}>
                 Program
               </Text>
-            </TouchableOpacity>
             {/* <Toast /> */}
           </View>
           <View style={tw`items-center `}>
             {!loading ? (
               <>
-                {goalDay && <ProgressBar progress={progress} goal={goalDay} />}
+                {goalDay && <ProgressBar navigation={navigation} progress={progress} goal={goalDay} />}
                 <View style={tw`bg-gray-100 w-full h-full mt-20 items-center`}>
                   <View
                     style={tw`bg-green-100 w-5/6 h-4/7 mt-20 shadow-md items-center`}
