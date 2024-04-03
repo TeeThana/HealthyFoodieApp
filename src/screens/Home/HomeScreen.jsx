@@ -8,7 +8,7 @@ import { db } from "../../../firebaseConfig";
 
 
 const HomeScreen = ({ navigation }) => {
-  const [userWeight, setUserWeight] = useState("");
+  const [userWeight, setUserWeight] = useState();
 
   const handleIncrease = () => {
     navigation.navigate("Increase", { weight : userWeight });
@@ -26,8 +26,9 @@ const HomeScreen = ({ navigation }) => {
         const documentSnapshot = await getDoc(documentRef);
         if (documentSnapshot.exists()) {
           // console.log(documentSnapshot.data());
-          const weight = documentSnapshot.data().weight;
-          console.log("Increase", weight)
+          const data = documentSnapshot.data().weight;
+          const weight = parseFloat(data);
+          console.log("Decrease", weight, typeof weight)
           setUserWeight(weight)
         } else {
           console.log("Document does not exist!");
