@@ -97,6 +97,7 @@ const InfoScreen = ({ navigation }) => {
     const updatedUserData = { ...userData };
     updatedUserData.allergy.splice(index, 1);
     setUserData(updatedUserData);
+    setHasChanges(true);
   };
 
   const handleGenerate = async (userData) => {
